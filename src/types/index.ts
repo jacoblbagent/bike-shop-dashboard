@@ -20,7 +20,7 @@ export type BikeCategory = 'Mountain' | 'Road' | 'Hybrid' | 'Electric' | 'Kids' 
 
 export interface Part {
   id: string;
-  name: string;
+  model: string;
   category: PartCategory;
   brand: string;
   sku: string;

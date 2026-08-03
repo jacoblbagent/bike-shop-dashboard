@@ -76,7 +76,7 @@ function generateParts(): Part[] {
     const price = Math.floor(Math.random() * 400 + 5);
     return {
       id: generateId(),
-      name,
+      model: name,
       category: cat as any,
       brand: partBrands[Math.floor(Math.random() * partBrands.length)],
       sku: `PRT-${cat.substring(0, 4).toUpperCase()}-${String(i + 1).padStart(3, '0')}`,
@@ -138,7 +138,7 @@ function generateOrders(bikes: Bike[], parts: Part[], customers: Customer[]): Or
       const qty = Math.floor(Math.random() * 2) + 1;
       items.push({
         productId: product.id,
-        productName: isBike ? `${(product as Bike).brand} ${(product as Bike).model}` : (product as Part).name,
+        productName: isBike ? `${(product as Bike).brand} ${(product as Bike).model}` : (product as Part).model,
         productType: isBike ? 'bike' : 'part',
         quantity: qty,
         unitPrice: (product as Bike | Part).price,
@@ -216,7 +216,7 @@ function generatePurchaseOrders(suppliers: Supplier[], bikes: Bike[], parts: Par
       const cost = Math.round((product as Bike | Part).price * 0.55);
       items.push({
         productId: product.id,
-        productName: isBike ? `${(product as Bike).brand} ${(product as Bike).model}` : (product as Part).name,
+        productName: isBike ? `${(product as Bike).brand} ${(product as Bike).model}` : (product as Part).model,
         productType: isBike ? 'bike' : 'part',
         quantity: qty,
         unitCost: cost,

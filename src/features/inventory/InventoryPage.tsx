@@ -55,7 +55,7 @@ export default function InventoryPage() {
     const q = search.toLowerCase();
     return parts.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
+        p.model.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
         p.brand.toLowerCase().includes(q)
     );
@@ -87,9 +87,7 @@ export default function InventoryPage() {
   }, [location.state, bikes, parts]);
 
   const bikeColumns: Column<Bike>[] = [
-    { key: 'brand', header: 'Brand', sortable: true },
-    { key: 'model', header: 'Model', sortable: true },
-    { key: 'category', header: 'Category', sortable: true, width: '100px' },
+    { key: 'name', header: 'Name', sortable: true, render: (row) => `${row.brand} ${row.model}` },
     {
       key: 'price',
       header: 'Price',
@@ -101,9 +99,7 @@ export default function InventoryPage() {
   ];
 
   const partColumns: Column<Part>[] = [
-    { key: 'name', header: 'Name', sortable: true },
-    { key: 'category', header: 'Category', sortable: true },
-    { key: 'brand', header: 'Brand', sortable: true },
+    { key: 'name', header: 'Name', sortable: true, render: (row) => `${row.brand} ${row.model}` },
     {
       key: 'price',
       header: 'Price',
@@ -145,12 +141,12 @@ export default function InventoryPage() {
   const handlePartCsv = (rows: Record<string, any>[]) => {
     const valid: Part[] = [];
     for (const row of rows) {
-      if (!row.name) continue;
+      if (!row.model) continue;
       const price = parseFloat(row.price);
       if (isNaN(price)) continue;
       valid.push({
         id: generateId(),
-        name: row.name,
+        model: row.model,
         category: row.category || 'Accessories',
         brand: row.brand || 'Generic',
         sku: row.sku || `PRT-IMPORT-${valid.length}`,
@@ -175,7 +171,7 @@ export default function InventoryPage() {
   };
 
   const validatePartCsv = (row: Record<string, any>): string | null => {
-    if (!row.name) return 'name is required';
+    if (!row.model) return 'model is required';
     if (row.price && isNaN(parseFloat(row.price))) return 'price must be numeric';
     return null;
   };
@@ -288,12 +284,12 @@ export default function InventoryPage() {
       <Modal
         open={!!selectedPart}
         onClose={() => setSelectedPart(null)}
-        title={selectedPart?.name ?? ''}
+        title={selectedPart?.model ?? ''}
         size="md"
       >
         {selectedPart && (
           <DetailGrid items={[
-            { label: 'Name', value: selectedPart.name },
+            { label: 'Model', value: selectedPart.model },
             { label: 'Category', value: selectedPart.category },
             { label: 'Brand', value: selectedPart.brand },
             { label: 'SKU', value: selectedPart.sku },
