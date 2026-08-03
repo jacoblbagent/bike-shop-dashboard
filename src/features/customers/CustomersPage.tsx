@@ -26,6 +26,7 @@ export default function CustomersPage() {
   const { orders: allOrders } = useSelector((s: RootState) => s.sales);
 
   const [search, setSearch] = useState('');
+  const [tierFilter, setTierFilter] = useState('All');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
@@ -34,15 +35,21 @@ export default function CustomersPage() {
   }, [dispatch]);
 
   const filtered = useMemo(() => {
-    if (!search) return customers;
-    const q = search.toLowerCase();
-    return customers.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.email.toLowerCase().includes(q) ||
-        c.phone.includes(q)
-    );
-  }, [customers, search]);
+    let result = customers;
+    if (tierFilter !== 'All') {
+      result = result.filter((c) => c.tier === tierFilter);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.email.toLowerCase().includes(q) ||
+          c.phone.includes(q)
+      );
+    }
+    return result;
+  }, [customers, search, tierFilter]);
 
   const columns: Column<Customer>[] = [
     { key: 'name', header: 'Name', sortable: true },
@@ -122,6 +129,13 @@ export default function CustomersPage() {
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder="Search customers..." />
+          <select className={styles.filterSelect} value={tierFilter} onChange={(e) => setTierFilter(e.target.value)}>
+            <option value="All">All Tiers</option>
+            <option value="Bronze">Bronze</option>
+            <option value="Silver">Silver</option>
+            <option value="Gold">Gold</option>
+            <option value="Platinum">Platinum</option>
+          </select>
           <CsvImportButton
             onData={handleCsv}
             label="Import Customers"

@@ -37,6 +37,7 @@ export default function SalesPage() {
   const { orders, loading } = useSelector((s: RootState) => s.sales);
 
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [showNewOrder, setShowNewOrder] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const location = useLocation();
@@ -53,15 +54,21 @@ export default function SalesPage() {
   }, [dispatch]);
 
   const filtered = useMemo(() => {
-    if (!search) return orders;
-    const q = search.toLowerCase();
-    return orders.filter(
-      (o) =>
-        o.orderNumber.toLowerCase().includes(q) ||
-        o.customerName.toLowerCase().includes(q) ||
-        o.status.toLowerCase().includes(q)
-    );
-  }, [orders, search]);
+    let result = orders;
+    if (statusFilter !== 'All') {
+      result = result.filter((o) => o.status === statusFilter);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (o) =>
+          o.orderNumber.toLowerCase().includes(q) ||
+          o.customerName.toLowerCase().includes(q) ||
+          o.status.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [orders, search, statusFilter]);
 
   // Auto-open order from customer page navigation
   useEffect(() => {
@@ -199,6 +206,16 @@ export default function SalesPage() {
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder="Search orders..." />
+          <select className={styles.filterSelect} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="All">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Refunded">Refunded</option>
+          </select>
           <CsvImportButton onData={handleCsv} label="Import Orders" />
           <Button onClick={() => setShowNewOrder(true)}>
             New Order

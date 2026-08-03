@@ -30,6 +30,7 @@ export default function InventoryPage() {
     return location.pathname.includes('/parts') ? 'parts' : 'bikes';
   });
   const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All');
   const [selectedBike, setSelectedBike] = useState<Bike | null>(null);
   const [selectedPart, setSelectedPart] = useState<Part | null>(null);
   const handledNavState = useRef(false);
@@ -40,26 +41,38 @@ export default function InventoryPage() {
   }, [dispatch]);
 
   const filteredBikes = useMemo(() => {
-    if (!search) return bikes;
-    const q = search.toLowerCase();
-    return bikes.filter(
-      (b) =>
-        b.brand.toLowerCase().includes(q) ||
-        b.model.toLowerCase().includes(q) ||
-        b.category.toLowerCase().includes(q)
-    );
-  }, [bikes, search]);
+    let result = bikes;
+    if (categoryFilter !== 'All') {
+      result = result.filter((b) => b.category === categoryFilter);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (b) =>
+          b.brand.toLowerCase().includes(q) ||
+          b.model.toLowerCase().includes(q) ||
+          b.category.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [bikes, search, categoryFilter]);
 
   const filteredParts = useMemo(() => {
-    if (!search) return parts;
-    const q = search.toLowerCase();
-    return parts.filter(
-      (p) =>
-        p.model.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q)
-    );
-  }, [parts, search]);
+    let result = parts;
+    if (categoryFilter !== 'All') {
+      result = result.filter((p) => p.category === categoryFilter);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.model.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.brand.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [parts, search, categoryFilter]);
 
   // Auto-open bike/part from notification navigation
   useEffect(() => {
@@ -182,14 +195,14 @@ export default function InventoryPage() {
       <Card padding="sm" className={styles.tabBar}>
         <button
           className={`${styles.tab} ${activeTab === 'bikes' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('bikes')}
+          onClick={() => { setActiveTab('bikes'); setCategoryFilter('All'); }}
         >
           <FiDollarSign size={15} />
           Bikes
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'parts' ? styles.activeTab : ''}`}
-          onClick={() => setActiveTab('parts')}
+          onClick={() => { setActiveTab('parts'); setCategoryFilter('All'); }}
         >
           <FiPackage size={15} />
           Parts
@@ -199,6 +212,38 @@ export default function InventoryPage() {
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder={`Search ${activeTab}...`} />
+          <select className={styles.filterSelect} value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+            <option value="All">All Categories</option>
+            {activeTab === 'bikes' ? (
+              <>
+                <option value="Mountain">Mountain</option>
+                <option value="Road">Road</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Electric">Electric</option>
+                <option value="Gravel">Gravel</option>
+                <option value="Kids">Kids</option>
+                <option value="Cyclocross">Cyclocross</option>
+                <option value="Cruiser">Cruiser</option>
+              </>
+            ) : (
+              <>
+                <option value="Brakes">Brakes</option>
+                <option value="Drivetrain">Drivetrain</option>
+                <option value="Handlebars">Handlebars</option>
+                <option value="Wheels">Wheels</option>
+                <option value="Tires">Tires</option>
+                <option value="Suspension">Suspension</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Tooling">Tooling</option>
+                <option value="Cleaning">Cleaning</option>
+                <option value="Oils">Oils</option>
+                <option value="Cables">Cables</option>
+                <option value="Seats">Seats</option>
+                <option value="Pedals">Pedals</option>
+                <option value="Frames">Frames</option>
+              </>
+            )}
+          </select>
           <div className={styles.actions}>
             {activeTab === 'bikes' ? (
               <CsvImportButton

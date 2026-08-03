@@ -31,6 +31,7 @@ export default function PurchaseOrdersPage() {
   const { purchases, loading } = useSelector((s: RootState) => s.purchases);
 
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [showNewPO, setShowNewPO] = useState(false);
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
   const location = useLocation();
@@ -42,15 +43,21 @@ export default function PurchaseOrdersPage() {
   }, [dispatch]);
 
   const filtered = useMemo(() => {
-    if (!search) return purchases;
-    const q = search.toLowerCase();
-    return purchases.filter(
-      (po) =>
-        po.poNumber.toLowerCase().includes(q) ||
-        po.supplierName.toLowerCase().includes(q) ||
-        po.status.toLowerCase().includes(q)
-    );
-  }, [purchases, search]);
+    let result = purchases;
+    if (statusFilter !== 'All') {
+      result = result.filter((po) => po.status === statusFilter);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (po) =>
+          po.poNumber.toLowerCase().includes(q) ||
+          po.supplierName.toLowerCase().includes(q) ||
+          po.status.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [purchases, search, statusFilter]);
 
   // Auto-open PO from notification navigation
   useEffect(() => {
@@ -181,6 +188,16 @@ export default function PurchaseOrdersPage() {
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder="Search purchase orders..." />
+          <select className={styles.filterSelect} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="All">All Statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Partial">Partial</option>
+            <option value="Received">Received</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
           <CsvImportButton onData={handleCsv} label="Import POs" />
           <Button onClick={() => setShowNewPO(true)}>
             New PO

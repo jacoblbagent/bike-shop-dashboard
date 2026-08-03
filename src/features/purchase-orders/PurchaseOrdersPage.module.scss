@@ -27,6 +27,22 @@
   margin-bottom: var(--space-lg);
 }
 
+.filterSelect {
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  min-width: 130px;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
 .loaderWrap {
   display: flex;
   justify-content: center;
