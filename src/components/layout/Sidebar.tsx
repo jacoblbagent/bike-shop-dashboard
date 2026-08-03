@@ -18,10 +18,10 @@ export default function Sidebar() {
   return (
     <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       <div className={`${styles.logo} ${collapsed ? styles.collapsed : ''}`}>
+        {!collapsed && <span className={styles.logoText}>ChainLink</span>}
         <button className={styles.toggleBtn} onClick={() => dispatch(toggleSidebar())} aria-label="Toggle sidebar">
           <FiMenu size={18} />
         </button>
-        {!collapsed && <span className={styles.logoText}>ChainLink</span>}
       </div>
       <nav className={styles.nav}>
         {navItems.filter(item => item.path !== '/settings').map(item => (
