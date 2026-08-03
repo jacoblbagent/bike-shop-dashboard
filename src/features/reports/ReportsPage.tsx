@@ -2,9 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area,
+  PieChart, Pie, Cell,
 } from 'recharts';
-import { FiDollarSign, FiPackage, FiAlertTriangle, FiTrendingUp } from 'react-icons/fi';
 import type { RootState } from '@/app/store';
 import Card from '@/components/common/Card';
 import MetricCard from '@/components/common/MetricCard';
@@ -220,23 +219,19 @@ export default function ReportsPage() {
         <MetricCard
           label="Total Inventory Value"
           value={formatCurrency(data.totalInventoryValue)}
-          icon={<FiDollarSign size={18} />}
         />
         <MetricCard
           label="Total Revenue"
           value={formatCurrency(data.totalRevenue)}
-          icon={<FiTrendingUp size={18} />}
         />
         <MetricCard
           label="Low Stock Count"
           value={String(data.lowStockCount)}
-          icon={<FiAlertTriangle size={18} />}
           trend={data.lowStockCount > 5 ? 10 : -5}
         />
         <MetricCard
           label="Avg Order Value"
           value={formatCurrency(data.avgOrderValue)}
-          icon={<FiPackage size={18} />}
         />
       </div>
 
