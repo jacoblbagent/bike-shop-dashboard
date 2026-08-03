@@ -1,4 +1,4 @@
-.wrapper { position: relative; display: flex; align-items: center; }
+.wrapper { position: relative; display: flex; align-items: center; flex: 1; }
 .icon { position: absolute; left: var(--space-md); color: var(--color-text-muted); pointer-events: none; }
 .input { @include input-base; padding-left: 36px; padding-right: 36px; }
 .clear {

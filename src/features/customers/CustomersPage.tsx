@@ -35,8 +35,7 @@ export default function CustomersPage() {
       (c) =>
         c.name.toLowerCase().includes(q) ||
         c.email.toLowerCase().includes(q) ||
-        c.phone.includes(q) ||
-        c.tier.toLowerCase().includes(q)
+        c.phone.includes(q)
     );
   }, [customers, search]);
 
@@ -44,21 +43,6 @@ export default function CustomersPage() {
     { key: 'name', header: 'Name', sortable: true },
     { key: 'email', header: 'Email', sortable: true },
     { key: 'phone', header: 'Phone' },
-    {
-      key: 'tier',
-      header: 'Tier',
-      sortable: true,
-      width: '90px',
-      render: (row) => <StatusBadge status={row.tier} />,
-    },
-    { key: 'orderCount', header: 'Orders', sortable: true, width: '80px' },
-    {
-      key: 'totalSpent',
-      header: 'Total Spent',
-      sortable: true,
-      width: '120px',
-      render: (row) => <span className={styles.currency}>{formatCurrency(row.totalSpent)}</span>,
-    },
     {
       key: 'lastVisit',
       header: 'Last Visit',
