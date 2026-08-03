@@ -1,7 +1,7 @@
 @use "@/styles/abstracts" as *;
 
 .page {
-  padding: var(--space-3xl) 0;
+  padding-bottom: var(--space-3xl);
 }
 
 .header {
@@ -135,7 +135,7 @@
 
 // Responsive
 @include md {
-  .page { padding: var(--space-lg) 0; }
+  .page { padding-bottom: var(--space-lg); }
   .header { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
   .toolbar { flex-direction: column; align-items: stretch; }
   .formRow { flex-wrap: wrap; }

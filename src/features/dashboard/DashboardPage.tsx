@@ -329,13 +329,6 @@ export default function DashboardPage() {
         {/* Time frame selector */}
         {timeFrameSelector}
 
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <p className={styles.subtitle}>
-              Error loading dashboard data
-            </p>
-          </div>
-        </div>
         <Card padding="lg">
           <p style={{ color: 'var(--color-danger)' }}>{error}</p>
           <button
@@ -363,18 +356,6 @@ export default function DashboardPage() {
       <div className={styles.page}>
         {/* Time frame selector */}
         {timeFrameSelector}
-
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <Skeleton width="240px" height="32px" />
-            <Skeleton
-              width="140px"
-              height="16px"
-              count={1}
-              className={styles.subtitleSkeleton}
-            />
-          </div>
-        </div>
 
         <div className={styles.metricsGrid}>
           {Array.from({ length: 6 }, (_, i) => (
@@ -424,16 +405,6 @@ export default function DashboardPage() {
       {/* Time frame selector */}
       {timeFrameSelector}
 
-      {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <p className={styles.subtitle}>
-            Welcome back. Here&apos;s what&apos;s happening at your shop today.
-          </p>
-        </div>
-      </div>
-
-      {/* Metric Cards */}
       <div className={styles.metricsGrid}>
         <MetricCard
           label="Total Revenue"

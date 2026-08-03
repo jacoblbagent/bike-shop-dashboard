@@ -118,11 +118,6 @@ export default function CustomersPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.subtitle}>{customers.length} total customers</p>
-        </div>
-      </div>
 
       <Card padding="lg">
         <div className={styles.toolbar}>

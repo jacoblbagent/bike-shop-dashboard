@@ -177,19 +177,14 @@ export default function PurchaseOrdersPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.subtitle}>{purchases.length} total purchase orders</p>
-        </div>
-        <Button onClick={() => setShowNewPO(true)}>
-          New PO
-        </Button>
-      </div>
 
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder="Search purchase orders..." />
           <CsvImportButton onData={handleCsv} label="Import POs" />
+          <Button onClick={() => setShowNewPO(true)}>
+            New PO
+          </Button>
         </div>
 
         {loading ? (

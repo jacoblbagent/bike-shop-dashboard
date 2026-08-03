@@ -195,19 +195,14 @@ export default function SalesPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.subtitle}>{orders.length} total orders</p>
-        </div>
-        <Button onClick={() => setShowNewOrder(true)}>
-          New Order
-        </Button>
-      </div>
 
       <Card padding="lg">
         <div className={styles.toolbar}>
           <SearchInput value={search} onChange={setSearch} placeholder="Search orders..." />
           <CsvImportButton onData={handleCsv} label="Import Orders" />
+          <Button onClick={() => setShowNewOrder(true)}>
+            New Order
+          </Button>
         </div>
 
         {loading ? (

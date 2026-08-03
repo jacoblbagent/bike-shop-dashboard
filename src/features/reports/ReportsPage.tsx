@@ -202,15 +202,12 @@ export default function ReportsPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.subtitle}>Key metrics and performance overview</p>
-        </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-lg)' }}>
         <Button variant="outline" onClick={handleExportInventory}>
           Export Summary
         </Button>
       </div>
-
       <div className={styles.metricsGrid}>
         <MetricCard
           label="Total Inventory Value"

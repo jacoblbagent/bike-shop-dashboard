@@ -178,11 +178,6 @@ export default function InventoryPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <p className={styles.subtitle}>Manage bikes and parts inventory</p>
-        </div>
-      </div>
 
       <Card padding="sm" className={styles.tabBar}>
         <button
