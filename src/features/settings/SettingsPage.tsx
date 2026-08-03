@@ -79,7 +79,7 @@ export default function SettingsPage() {
               className={styles.input}
             />
           </div>
-          <Button disabled={!profileDirty}>Save Changes</Button>
+          <Button disabled={!profileDirty} onClick={() => { initialProfile.current = { ...profile }; }}>Save Changes</Button>
         </Card>
 
         {/* Store Configuration */}
@@ -118,7 +118,7 @@ export default function SettingsPage() {
               className={styles.input}
             />
           </div>
-          <Button disabled={!configDirty}>Save Changes</Button>
+          <Button disabled={!configDirty} onClick={() => { initialConfig.current = { ...config }; }}>Save Changes</Button>
         </Card>
 
         {/* Bottom Nav Bar */}
@@ -142,7 +142,7 @@ export default function SettingsPage() {
               </select>
             </div>
           ))}
-          <Button disabled={!navDirty}>Save Nav Layout</Button>
+          <Button disabled={!navDirty} onClick={() => { initialNavPaths.current = [...bottomNavPaths]; }}>Save Nav Layout</Button>
         </Card>
 
         {/* Notifications */}
@@ -183,7 +183,7 @@ export default function SettingsPage() {
             />
             <span>Daily sales summary email</span>
           </label>
-          <Button disabled={!notifsDirty}>Save Preferences</Button>
+          <Button disabled={!notifsDirty} onClick={() => { initialNotifs.current = { ...notifs }; }}>Save Preferences</Button>
         </Card>
 
       </div>
