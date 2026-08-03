@@ -22,11 +22,21 @@ interface HeaderProps {
   mobile?: boolean;
 }
 
-// ── Mock notifications ────────────────────────────────────────
-const mockNotifications = [
-  { id: '1', type: 'order', title: 'New Order Received', message: 'Order ORD-1023 from Sarah Johnson', time: '2m ago', unread: true, route: '/sales' },
+interface Notification {
+  id: string;
+  type: 'order' | 'stock' | 'info';
+  title: string;
+  message: string;
+  time: string;
+  unread: boolean;
+  route: string;
+  entityNumber?: string;
+}
+
+const initialNotifications: Notification[] = [
+  { id: '1', type: 'order', title: 'New Order Received', message: 'Order ORD-1023 from Sarah Johnson', time: '2m ago', unread: true, route: '/sales', entityNumber: 'ORD-1023' },
   { id: '2', type: 'stock', title: 'Low Stock Alert', message: 'Fuel EX 8 has only 1 unit left', time: '15m ago', unread: true, route: '/inventory' },
-  { id: '3', type: 'order', title: 'Order Shipped', message: 'PO-2006 has been marked as shipped', time: '1h ago', unread: false, route: '/purchase-orders' },
+  { id: '3', type: 'order', title: 'Order Shipped', message: 'PO-2006 has been marked as shipped', time: '1h ago', unread: false, route: '/purchase-orders', entityNumber: 'PO-2006' },
   { id: '4', type: 'info', title: 'Report Ready', message: 'Monthly sales report is available', time: '3h ago', unread: false, route: '/reports' },
 ];
 
@@ -39,9 +49,13 @@ const notificationIcons: Record<string, typeof FiInfo> = {
 export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
   const navigate = useNavigate();
   const { sidebarCollapsed } = useSelector((s: RootState) => s.ui);
+  const { orders } = useSelector((s: RootState) => s.sales);
+  const { purchases } = useSelector((s: RootState) => s.purchases);
+  const { bikes } = useSelector((s: RootState) => s.inventory);
   const location = useLocation();
   const pageTitle = Object.entries(pageTitles).find(([path]) => location.pathname.startsWith(path))?.[1] || 'Dashboard';
 
+  const [notifications, setNotifications] = useState(initialNotifications);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -57,7 +71,43 @@ export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [notifOpen, userOpen]);
 
-  const unreadCount = mockNotifications.filter(n => n.unread).length;
+  const markAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const handleNotifClick = (n: Notification) => {
+    // Mark as read
+    setNotifications(prev => prev.map(nn => nn.id === n.id ? { ...nn, unread: false } : nn));
+    setNotifOpen(false);
+
+    // Navigate with modal state when possible
+    if (n.type === 'order' && n.entityNumber && n.route === '/sales') {
+      const order = orders.find(o => o.orderNumber === n.entityNumber);
+      if (order) {
+        navigate('/sales', { state: { selectedOrderId: order.id } });
+        return;
+      }
+    } else if (n.type === 'order' && n.entityNumber && n.route === '/purchase-orders') {
+      const po = purchases.find(p => p.poNumber === n.entityNumber);
+      if (po) {
+        navigate('/purchase-orders', { state: { selectedPOId: po.id } });
+        return;
+      }
+    } else if (n.type === 'stock') {
+      // Try to find the bike by name extracted from the message
+      const bikeName = n.message.split(' has only')[0];
+      const bike = bikes.find(b => `${b.brand} ${b.model}` === bikeName);
+      if (bike) {
+        navigate('/inventory', { state: { selectedBikeId: bike.id } });
+        return;
+      }
+    }
+
+    // Fallback: just navigate to the route
+    navigate(n.route);
+  };
+
+  const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
     <header className={`${styles.header} ${mobile ? styles.mobileHeader : ''} ${!mobile && sidebarCollapsed ? styles.headerCollapsed : ''}`}>
@@ -81,13 +131,15 @@ export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
             <div className={styles.dropdown}>
               <div className={styles.dropdownHeader}>
                 <span className={styles.dropdownTitle}>Notifications</span>
-                <button className={styles.dropdownAction} onClick={() => setNotifOpen(false)}>Mark all read</button>
+                {unreadCount > 0 && (
+                  <button className={styles.dropdownAction} onClick={markAllRead}>Mark all read</button>
+                )}
               </div>
               <div className={styles.notifList}>
-                {mockNotifications.map(n => {
+                {notifications.map(n => {
                   const Icon = notificationIcons[n.type] || FiInfo;
                   return (
-                    <div key={n.id} className={`${styles.notifItem} ${n.unread ? styles.notifUnread : ''}`} onClick={() => { navigate(n.route); setNotifOpen(false); }}>
+                    <div key={n.id} className={`${styles.notifItem} ${n.unread ? styles.notifUnread : ''}`} onClick={() => handleNotifClick(n)}>
                       <div className={styles.notifIcon}><Icon size={14} /></div>
                       <div className={styles.notifBody}>
                         <div className={styles.notifTitle}>{n.title}</div>

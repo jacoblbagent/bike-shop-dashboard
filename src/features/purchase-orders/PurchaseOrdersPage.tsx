@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import type { AppDispatch, RootState } from '@/app/store';
 import { fetchPurchaseOrders, addPurchaseOrder } from '@/app/store/slices/purchaseOrderSlice';
 import Table, { type Column } from '@/components/common/Table';
@@ -32,6 +33,8 @@ export default function PurchaseOrdersPage() {
   const [search, setSearch] = useState('');
   const [showNewPO, setShowNewPO] = useState(false);
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
+  const location = useLocation();
+  const handledNavState = useRef(false);
   const [form, setForm] = useState<typeof emptyForm>({ ...emptyForm, items: [{ ...emptyForm.items[0] }] });
 
   useEffect(() => {
@@ -48,6 +51,19 @@ export default function PurchaseOrdersPage() {
         po.status.toLowerCase().includes(q)
     );
   }, [purchases, search]);
+
+  // Auto-open PO from notification navigation
+  useEffect(() => {
+    const poId = (location.state as any)?.selectedPOId;
+    if (poId && purchases.length > 0 && !handledNavState.current) {
+      const po = purchases.find((p) => p.id === poId);
+      if (po) {
+        setSelectedPO(po);
+      }
+      handledNavState.current = true;
+      window.history.replaceState({}, '');
+    }
+  }, [location.state, purchases]);
 
   const columns: Column<PurchaseOrder>[] = [
     { key: 'poNumber', header: 'PO #', sortable: true, width: '120px' },

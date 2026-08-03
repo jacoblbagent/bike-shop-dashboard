@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { FiDollarSign, FiPackage } from 'react-icons/fi';
@@ -32,6 +32,7 @@ export default function InventoryPage() {
   const [search, setSearch] = useState('');
   const [selectedBike, setSelectedBike] = useState<Bike | null>(null);
   const [selectedPart, setSelectedPart] = useState<Part | null>(null);
+  const handledNavState = useRef(false);
 
   useEffect(() => {
     dispatch(fetchBikes());
@@ -59,6 +60,28 @@ export default function InventoryPage() {
         p.brand.toLowerCase().includes(q)
     );
   }, [parts, search]);
+
+  // Auto-open bike/part from notification navigation
+  useEffect(() => {
+    const bikeId = (location.state as any)?.selectedBikeId;
+    const partId = (location.state as any)?.selectedPartId;
+    if (handledNavState.current) return;
+    if (bikeId && bikes.length > 0) {
+      const bike = bikes.find((b) => b.id === bikeId);
+      if (bike) {
+        setSelectedBike(bike);
+      }
+      handledNavState.current = true;
+      window.history.replaceState({}, '');
+    } else if (partId && parts.length > 0) {
+      const part = parts.find((p) => p.id === partId);
+      if (part) {
+        setSelectedPart(part);
+      }
+      handledNavState.current = true;
+      window.history.replaceState({}, '');
+    }
+  }, [location.state, bikes, parts]);
 
   const bikeColumns: Column<Bike>[] = [
     { key: 'brand', header: 'Brand', sortable: true },
