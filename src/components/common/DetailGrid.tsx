@@ -10,9 +10,17 @@ export function DetailGrid({ items }: { items: DetailItem[] }) {
   return (
     <div className={styles.grid}>
       {items.map((item, i) => (
-        <div key={i} className={styles.item}>
-          <div className={styles.label}>{item.label}</div>
-          <div className={styles.value}>{item.value}</div>
+        <div key={i} className={styles.item}
+          style={item.label === '' ? { gridColumn: '1 / -1', marginTop: 'var(--space-lg)' } : {}}
+        >
+          {item.label === '' ? (
+            <div className={styles.sectionTitle}>{item.value}</div>
+          ) : (
+            <>
+              <div className={styles.label}>{item.label}</div>
+              <div className={styles.value}>{item.value}</div>
+            </>
+          )}
         </div>
       ))}
     </div>

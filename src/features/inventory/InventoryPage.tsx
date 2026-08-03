@@ -262,6 +262,7 @@ export default function InventoryPage() {
       >
         {selectedBike && (
           <DetailGrid items={[
+            { label: '', value: 'Product Details' },
             { label: 'Brand', value: selectedBike.brand },
             { label: 'Model', value: selectedBike.model },
             { label: 'Year', value: selectedBike.year },
@@ -269,11 +270,13 @@ export default function InventoryPage() {
             { label: 'Frame Size', value: selectedBike.frameSize },
             { label: 'Color', value: selectedBike.color },
             { label: 'SKU', value: selectedBike.sku },
+            { label: '', value: 'Pricing & Stock' },
             { label: 'Price', value: formatCurrency(selectedBike.price) },
             { label: 'Cost', value: formatCurrency(selectedBike.cost) },
             { label: 'Margin', value: `${Math.round(((selectedBike.price - selectedBike.cost) / selectedBike.price) * 100)}%` },
             { label: 'Quantity', value: selectedBike.quantity },
             { label: 'Reorder Point', value: selectedBike.reorderPoint },
+            { label: '', value: 'Additional Info' },
             { label: 'Description', value: selectedBike.description || '—' },
             { label: 'Added', value: formatDate(selectedBike.createdAt) },
           ]} />
@@ -289,15 +292,18 @@ export default function InventoryPage() {
       >
         {selectedPart && (
           <DetailGrid items={[
+            { label: '', value: 'Product Details' },
             { label: 'Model', value: selectedPart.model },
             { label: 'Category', value: selectedPart.category },
             { label: 'Brand', value: selectedPart.brand },
             { label: 'SKU', value: selectedPart.sku },
+            { label: '', value: 'Pricing & Stock' },
             { label: 'Price', value: formatCurrency(selectedPart.price) },
             { label: 'Cost', value: formatCurrency(selectedPart.cost) },
             { label: 'Margin', value: `${Math.round(((selectedPart.price - selectedPart.cost) / selectedPart.price) * 100)}%` },
             { label: 'Quantity', value: selectedPart.quantity },
             { label: 'Reorder Point', value: selectedPart.reorderPoint },
+            { label: '', value: 'Additional Info' },
             { label: 'Compatible Brands', value: selectedPart.compatibleBrands?.join(', ') || 'All' },
             { label: 'Description', value: selectedPart.description || '—' },
             { label: 'Added', value: formatDate(selectedPart.createdAt) },
