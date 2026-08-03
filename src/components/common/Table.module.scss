@@ -9,8 +9,8 @@
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   &.sortable { cursor: pointer; user-select: none; &:hover { color: var(--color-text); } }
-  span { margin-right: var(--space-xs); }
 }
+.headerInner { display: inline-flex; align-items: center; gap: var(--space-xs); }
 .sortIcon { opacity: 0; }
 .th.sortable:hover .sortIcon { opacity: 0.3; }
 .tr { transition: background var(--transition-fast); &:hover { background: var(--color-surface-hover); } &.clickable { cursor: pointer; } }

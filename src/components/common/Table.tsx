@@ -58,10 +58,12 @@ export default function Table<T extends Record<string, any>>({
                   style={{ width: col.width }}
                   onClick={() => col.sortable && handleSort(col.key)}
                 >
-                  <span>{col.header}</span>
-                  {col.sortable && sortKey === col.key
-                    ? (sortDir === 'asc' ? <FiChevronUp size={14} /> : <FiChevronDown size={14} />)
-                    : col.sortable ? <FiChevronsUp size={14} className={styles.sortIcon} /> : null}
+                  <span className={styles.headerInner}>
+                    <span>{col.header}</span>
+                    {col.sortable && sortKey === col.key
+                      ? (sortDir === 'asc' ? <FiChevronUp size={14} /> : <FiChevronDown size={14} />)
+                      : col.sortable ? <FiChevronsUp size={14} className={styles.sortIcon} /> : null}
+                  </span>
                 </th>
               ))}
             </tr>
