@@ -97,7 +97,7 @@ export default function SalesPage() {
       header: 'Status',
       sortable: true,
       width: '120px',
-      render: (row) => <StatusBadge status={row.status} />,
+      render: (row) => row.status,
     },
     {
       key: 'createdAt',

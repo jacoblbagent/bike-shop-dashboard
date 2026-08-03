@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
 import MetricCard from '@/components/common/MetricCard';
-import StatusBadge from '@/components/common/StatusBadge';
 import Skeleton from '@/components/common/Skeleton';
 import Card from '@/components/common/Card';
 import type { DashboardMetrics, Order } from '@/types';
@@ -551,7 +550,7 @@ export default function DashboardPage() {
                   </span>
                 </td>
                 <td>
-                  <StatusBadge status={order.status} />
+                  {order.status}
                 </td>
                 <td className={styles.orderAmount}>
                   {formatCurrency(order.total)}

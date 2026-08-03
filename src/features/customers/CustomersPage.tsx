@@ -85,7 +85,7 @@ export default function CustomersPage() {
       header: 'Status',
       sortable: true,
       width: '110px',
-      render: (row) => <StatusBadge status={row.status} />,
+      render: (row) => row.status,
     },
   ];
 

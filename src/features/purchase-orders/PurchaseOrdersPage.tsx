@@ -70,7 +70,7 @@ export default function PurchaseOrdersPage() {
       header: 'Status',
       sortable: true,
       width: '120px',
-      render: (row) => <StatusBadge status={row.status} />,
+      render: (row) => row.status,
     },
     {
       key: 'expectedDate',
