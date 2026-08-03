@@ -49,9 +49,6 @@ const notificationIcons: Record<string, typeof FiInfo> = {
 export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
   const navigate = useNavigate();
   const { sidebarCollapsed } = useSelector((s: RootState) => s.ui);
-  const { orders } = useSelector((s: RootState) => s.sales);
-  const { purchases } = useSelector((s: RootState) => s.purchases);
-  const { bikes } = useSelector((s: RootState) => s.inventory);
   const location = useLocation();
   const pageTitle = Object.entries(pageTitles).find(([path]) => location.pathname.startsWith(path))?.[1] || 'Dashboard';
 
@@ -80,31 +77,18 @@ export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
     setNotifications(prev => prev.map(nn => nn.id === n.id ? { ...nn, unread: false } : nn));
     setNotifOpen(false);
 
-    // Navigate with modal state when possible
+    // Navigate with modal state — use entity numbers so the target page
+    // can resolve by number after its own data fetch completes
     if (n.type === 'order' && n.entityNumber && n.route === '/sales') {
-      const order = orders.find(o => o.orderNumber === n.entityNumber);
-      if (order) {
-        navigate('/sales', { state: { selectedOrderId: order.id } });
-        return;
-      }
+      navigate('/sales', { state: { selectedOrderNumber: n.entityNumber } });
     } else if (n.type === 'order' && n.entityNumber && n.route === '/purchase-orders') {
-      const po = purchases.find(p => p.poNumber === n.entityNumber);
-      if (po) {
-        navigate('/purchase-orders', { state: { selectedPOId: po.id } });
-        return;
-      }
+      navigate('/purchase-orders', { state: { selectedPONumber: n.entityNumber } });
     } else if (n.type === 'stock') {
-      // Try to find the bike by name extracted from the message
       const bikeName = n.message.split(' has only')[0];
-      const bike = bikes.find(b => `${b.brand} ${b.model}` === bikeName);
-      if (bike) {
-        navigate('/inventory', { state: { selectedBikeId: bike.id } });
-        return;
-      }
+      navigate('/inventory', { state: { selectedBikeModel: bikeName } });
+    } else {
+      navigate(n.route);
     }
-
-    // Fallback: just navigate to the route
-    navigate(n.route);
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;

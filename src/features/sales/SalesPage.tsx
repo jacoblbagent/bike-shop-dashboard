@@ -66,8 +66,11 @@ export default function SalesPage() {
   // Auto-open order from customer page navigation
   useEffect(() => {
     const orderId = (location.state as any)?.selectedOrderId;
-    if (orderId && orders.length > 0 && !handledNavState.current) {
-      const order = orders.find((o) => o.id === orderId);
+    const orderNumber = (location.state as any)?.selectedOrderNumber;
+    if ((orderId || orderNumber) && orders.length > 0 && !handledNavState.current) {
+      const order = orderId
+        ? orders.find((o) => o.id === orderId)
+        : orders.find((o) => o.orderNumber === orderNumber);
       if (order) {
         setSelectedOrder(order);
       }

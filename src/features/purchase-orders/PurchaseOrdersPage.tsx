@@ -55,8 +55,11 @@ export default function PurchaseOrdersPage() {
   // Auto-open PO from notification navigation
   useEffect(() => {
     const poId = (location.state as any)?.selectedPOId;
-    if (poId && purchases.length > 0 && !handledNavState.current) {
-      const po = purchases.find((p) => p.id === poId);
+    const poNumber = (location.state as any)?.selectedPONumber;
+    if ((poId || poNumber) && purchases.length > 0 && !handledNavState.current) {
+      const po = poId
+        ? purchases.find((p) => p.id === poId)
+        : purchases.find((p) => p.poNumber === poNumber);
       if (po) {
         setSelectedPO(po);
       }

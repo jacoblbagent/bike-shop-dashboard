@@ -64,10 +64,13 @@ export default function InventoryPage() {
   // Auto-open bike/part from notification navigation
   useEffect(() => {
     const bikeId = (location.state as any)?.selectedBikeId;
+    const bikeModel = (location.state as any)?.selectedBikeModel;
     const partId = (location.state as any)?.selectedPartId;
     if (handledNavState.current) return;
-    if (bikeId && bikes.length > 0) {
-      const bike = bikes.find((b) => b.id === bikeId);
+    if ((bikeId || bikeModel) && bikes.length > 0) {
+      const bike = bikeId
+        ? bikes.find((b) => b.id === bikeId)
+        : bikes.find((b) => b.model === bikeModel);
       if (bike) {
         setSelectedBike(bike);
       }
