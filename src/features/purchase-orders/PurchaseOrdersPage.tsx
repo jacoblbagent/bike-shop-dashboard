@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import type { AppDispatch, RootState } from '@/app/store';
-import { fetchPurchaseOrders, addPurchaseOrder } from '@/app/store/slices/purchaseOrderSlice';
+import { fetchPurchaseOrders, createPurchaseOrder, addPOToStore } from '@/app/store/slices/purchaseOrderSlice';
 import Table, { type Column } from '@/components/common/Table';
 import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
@@ -129,11 +129,11 @@ export default function PurchaseOrdersPage() {
       });
     }
     if (valid.length > 0) {
-      valid.forEach((po) => dispatch(addPurchaseOrder(po)));
+      valid.forEach((po) => dispatch(addPOToStore(po)));
     }
   };
 
-  const handleCreatePO = () => {
+  const handleCreatePO = async () => {
     const subtotal = form.items.reduce((s, i) => s + i.unitCost * i.quantity, 0);
     const tax = Math.round(subtotal * 0.08);
     const total = subtotal + tax;
@@ -152,7 +152,7 @@ export default function PurchaseOrdersPage() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    dispatch(addPurchaseOrder(newPO));
+    await dispatch(createPurchaseOrder(newPO));
     setShowNewPO(false);
     setForm({ ...emptyForm, items: [{ ...emptyForm.items[0] }] });
   };

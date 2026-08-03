@@ -16,17 +16,17 @@ import styles from './ReportsPage.module.scss';
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Mountain: '#4f46e5',
+  Mountain: '#3b82f6',
   Road: '#10b981',
   Hybrid: '#f59e0b',
   Electric: '#3b82f6',
-  Kids: '#ef4444',
-  Gravel: '#8b5cf6',
+  Gravel: '#ef4444',
+  Kids: '#8b5cf6',
   Cyclocross: '#ec4899',
   Cruiser: '#14b8a6',
 };
 
-const PIE_COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
 
 interface ReportData {
   totalInventoryValue: number;

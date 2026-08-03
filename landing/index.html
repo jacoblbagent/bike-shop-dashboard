@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChainLink — Bike Shop Management Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --color-white: #ffffff; --color-black: #000000;
+        --color-accent: #4f46e5; --color-accent-hover: #4338ca;
+        --color-accent-light: rgba(79,70,229,0.12); --color-accent-subtle: rgba(79,70,229,0.08);
+        --color-success: #10b981; --color-success-bg: rgba(16,185,129,0.12);
+        --color-warning: #f59e0b; --color-warning-bg: rgba(245,158,11,0.12);
+        --color-danger: #ef4444; --color-danger-bg: rgba(239,68,68,0.12);
+        --color-info: #3b82f6; --color-info-bg: rgba(59,130,246,0.12);
+        --color-bg: #0d1117; --color-surface: #161b22; --color-surface-hover: #1c2333;
+        --color-surface-secondary: #0d1117; --color-border: #30363d;
+        --color-border-light: #21262d; --color-text: #e6edf3;
+        --color-text-secondary: #8b949e; --color-text-muted: #6e7681;
+        --color-text-inverse: #0d1117;
+        --sidebar-bg: #010409; --sidebar-text: #6e7681; --sidebar-text-active: #e6edf3;
+        --font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        --font-mono: 'SF Mono','Fira Code','Consolas',monospace;
+        --font-size-xs: .75rem; --font-size-sm: .8125rem; --font-size-base: .875rem;
+        --font-size-lg: 1rem; --font-size-xl: 1.25rem; --font-size-2xl: 1.5rem;
+        --font-size-3xl: 2rem; --font-size-4xl: 2.5rem; --font-size-5xl: 3.25rem;
+        --font-weight-normal: 400; --font-weight-medium: 500; --font-weight-semibold: 600;
+        --font-weight-bold: 700; --font-weight-extrabold: 800;
+        --line-height-tight: 1.25; --line-height-normal: 1.5; --line-height-relaxed: 1.625;
+        --space-xxs: 2px; --space-xs: 4px; --space-sm: 8px; --space-md: 12px;
+        --space-lg: 16px; --space-xl: 20px; --space-2xl: 24px; --space-3xl: 32px;
+        --space-4xl: 40px; --space-5xl: 48px; --space-6xl: 64px; --space-7xl: 80px; --space-8xl: 96px;
+        --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px; --radius-full: 9999px;
+        --shadow-xs: 0 1px 2px rgba(0,0,0,.2); --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+        --shadow-md: 0 4px 6px rgba(0,0,0,.3); --shadow-lg: 0 10px 15px rgba(0,0,0,.4);
+        --shadow-xl: 0 20px 25px rgba(0,0,0,.5);
+        --transition-fast: 150ms ease; --transition-base: 200ms ease; --transition-slow: 300ms ease;
+        --header-height: 64px; --content-max-width: 1200px;
+      }
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;scroll-behavior:smooth}
+      body{font-family:var(--font-family);font-size:var(--font-size-base);line-height:var(--line-height-normal);color:var(--color-text);background:var(--color-bg);min-height:100vh}
+      img,svg{display:block;max-width:100%}
+      a{color:inherit;text-decoration:none}
+      button{cursor:pointer;border:none;background:none;font-family:inherit;font-size:inherit}
+      ul,ol{list-style:none}
+      h1,h2,h3,h4,h5,h6{font-weight:var(--font-weight-semibold);line-height:var(--line-height-tight)}
+      .wrap{max-width:var(--content-max-width);margin:0 auto;padding:0 var(--space-2xl)}
+
+      /* ── Header ───────────────────────────────── */
+      .site-header{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--color-border)}
+      .site-header .wrap{display:flex;align-items:center;justify-content:space-between;height:var(--header-height)}
+      .logo{display:flex;align-items:center;gap:var(--space-md);font-size:var(--font-size-xl);font-weight:var(--font-weight-bold);color:var(--color-text)}
+      .logo-icon{width:36px;height:36px;background:var(--color-accent);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:#fff;font-size:var(--font-size-lg);font-weight:var(--font-weight-bold)}
+      .nav{display:flex;align-items:center;gap:var(--space-3xl)}
+      .nav a{font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);color:var(--color-text-secondary);transition:color var(--transition-fast)}
+      .nav a:hover{color:var(--color-text)}
+      .nav-cta{display:inline-flex;align-items:center;gap:var(--space-sm);padding:var(--space-sm) var(--space-xl);background:var(--color-accent);color:#fff!important;border-radius:var(--radius-md);font-weight:var(--font-weight-semibold);transition:background var(--transition-fast)}
+      .nav-cta:hover{background:var(--color-accent-hover)!important}
+
+      /* ── Hero ─────────────────────────────────── */
+      .hero{padding:var(--space-8xl) 0 var(--space-6xl);text-align:center;position:relative;overflow:hidden}
+      .hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(79,70,229,.08) 0,transparent 70%);pointer-events:none}
+      .hero-tag{display:inline-flex;align-items:center;gap:var(--space-xs);padding:var(--space-xs) var(--space-md);background:var(--color-accent-light);color:var(--color-accent);border-radius:var(--radius-full);font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);margin-bottom:var(--space-2xl)}
+      .hero h1{font-size:var(--font-size-5xl);font-weight:var(--font-weight-extrabold);line-height:1.15;margin-bottom:var(--space-xl);letter-spacing:-.02em;max-width:820px;margin-left:auto;margin-right:auto}
+      .hero h1 span{color:var(--color-accent)}
+      .hero p{font-size:var(--font-size-lg);color:var(--color-text-secondary);max-width:600px;margin:0 auto var(--space-3xl);line-height:var(--line-height-relaxed)}
+      .hero-actions{display:flex;align-items:center;justify-content:center;gap:var(--space-lg);flex-wrap:wrap}
+      .btn-primary,.btn-secondary{display:inline-flex;align-items:center;gap:var(--space-sm);padding:var(--space-md) var(--space-2xl);border-radius:var(--radius-md);font-size:var(--font-size-base);font-weight:var(--font-weight-semibold);transition:all var(--transition-fast)}
+      .btn-primary{background:var(--color-accent);color:#fff}
+      .btn-primary:hover{background:var(--color-accent-hover);transform:translateY(-1px)}
+      .btn-secondary{background:var(--color-surface);color:var(--color-text);border:1px solid var(--color-border)}
+      .btn-secondary:hover{background:var(--color-surface-hover);border-color:var(--color-text-muted)}
+
+      /* ── Preview ──────────────────────────────── */
+      .preview{padding:var(--space-6xl) 0}
+      .preview-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl)}
+      .preview-bar{display:flex;align-items:center;gap:var(--space-md);padding:var(--space-lg) var(--space-2xl);border-bottom:1px solid var(--color-border);background:var(--sidebar-bg)}
+      .dot{width:12px;height:12px;border-radius:50%}
+      .dot.r{background:#ef4444}.dot.y{background:#f59e0b}.dot.g{background:#10b981}
+      .preview-title{font-size:var(--font-size-xs);color:var(--color-text-muted);margin-left:var(--space-sm)}
+      .preview-body{padding:var(--space-2xl)}
+      .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-bottom:var(--space-2xl)}
+      .m-metric{background:var(--color-surface-hover);border:1px solid var(--color-border-light);border-radius:var(--radius-lg);padding:var(--space-lg);display:flex;flex-direction:column;gap:var(--space-xs)}
+      .m-label{font-size:var(--font-size-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.05em;font-weight:var(--font-weight-semibold)}
+      .m-val{font-size:var(--font-size-2xl);font-weight:var(--font-weight-bold);color:var(--color-text)}
+      .m-trend{font-size:var(--font-size-xs);font-weight:var(--font-weight-semibolid)}
+      .m-trend.up{color:var(--color-success)}.m-trend.down{color:var(--color-danger)}
+      .charts{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg)}
+      .c-card{background:var(--color-surface-hover);border:1px solid var(--color-border-light);border-radius:var(--radius-lg);padding:var(--space-lg)}
+      .c-card .ct{font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);color:var(--color-text-secondary);margin-bottom:var(--space-lg)}
+      .bars{height:180px;display:flex;align-items:flex-end;gap:6px;padding-bottom:var(--space-sm)}
+      .bar{flex:1;border-radius:var(--radius-sm) var(--radius-sm) 0 0;background:var(--color-accent);opacity:.6}
+      .bar:nth-child(3){background:var(--color-success)}.bar:nth-child(5){background:var(--color-warning)}
+      .bar:nth-child(7){background:var(--color-info)}.bar:nth-child(9){background:var(--color-accent)}
+
+      /* ── Sections ─────────────────────────────── */
+      .section{padding:var(--space-7xl) 0;border-top:1px solid var(--color-border)}
+      .sec-label{display:inline-flex;align-items:center;gap:var(--space-xs);padding:var(--space-xs) var(--space-md);background:var(--color-accent-light);color:var(--color-accent);border-radius:var(--radius-full);font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);margin-bottom:var(--space-lg)}
+      .sec-title{font-size:var(--font-size-3xl);font-weight:var(--font-weight-bold);margin-bottom:var(--space-md)}
+      .sec-sub{font-size:var(--font-size-base);color:var(--color-text-secondary);max-width:560px;line-height:var(--line-height-relaxed);margin-bottom:var(--space-5xl)}
+
+      /* ── Testimonials ─────────────────────────── */
+      .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-xl)}
+      .test-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-2xl)}
+      .stars{display:flex;gap:2px;margin-bottom:var(--space-md);color:var(--color-warning);font-size:var(--font-size-sm)}
+      .test-card blockquote{font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed);margin-bottom:var(--space-lg);font-style:italic}
+      .test-author{font-size:var(--font-size-xs);color:var(--color-text-muted)}
+      .test-role{font-size:var(--font-size-xs);color:var(--color-accent);margin-top:2px}
+
+      /* ── What It Does (features) ──────────────── */
+      .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-xl)}
+      .feat-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-2xl)}
+      .feat-icon{width:44px;height:44px;border-radius:var(--radius-md);background:var(--color-accent-light);color:var(--color-accent);display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-lg);font-size:var(--font-size-xl)}
+      .feat-card h3{font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);margin-bottom:var(--space-sm)}
+      .feat-card p{font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:var(--line-height-relaxed)}
+
+      /* ── Brands ───────────────────────────────── */
+      .brands{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-2xl);margin:var(--space-4xl) auto 0;max-width:700px}
+      .brand{display:flex;align-items:center;gap:var(--space-sm);padding:var(--space-md) var(--space-xl);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);font-size:var(--font-size-sm);font-weight:var(--font-weight-medium)}
+
+      /* ── CTA ──────────────────────────────────── */
+      .cta{text-align:center}
+      .cta-inner{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-6xl) var(--space-4xl);max-width:720px;margin:0 auto;position:relative;overflow:hidden}
+      .cta-inner::before{content:'';position:absolute;top:-50%;right:-30%;width:400px;height:400px;background:radial-gradient(circle,rgba(79,70,229,.08) 0,transparent 70%);pointer-events:none}
+      .cta-inner h2{font-size:var(--font-size-3xl);font-weight:var(--font-weight-bold);margin-bottom:var(--space-md)}
+      .cta-inner p{font-size:var(--font-size-base);color:var(--color-text-secondary);margin-bottom:var(--space-3xl);max-width:500px;margin-left:auto;margin-right:auto}
+
+      /* ── Footer ───────────────────────────────── */
+      .footer{border-top:1px solid var(--color-border);padding:var(--space-3xl) 0}
+      .footer .wrap{display:flex;align-items:center;justify-content:space-between}
+      .f-text{font-size:var(--font-size-sm);color:var(--color-text-muted)}
+      .f-links{display:flex;gap:var(--space-2xl)}
+      .f-links a{font-size:var(--font-size-sm);color:var(--color-text-muted);transition:color var(--transition-fast)}
+      .f-links a:hover{color:var(--color-text)}
+
+      /* ── Animations ───────────────────────────── */
+      @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      .anim{animation:fadeInUp .5s ease forwards}.a1{animation-delay:.1s;opacity:0}.a2{animation-delay:.2s;opacity:0}.a3{animation-delay:.3s;opacity:0}
+
+      /* ── Responsive ───────────────────────────── */
+      @media(max-width:1023px){
+        .hero h1{font-size:var(--font-size-4xl)}
+        .feat-grid,.test-grid{grid-template-columns:repeat(2,1fr)}
+      }
+      @media(max-width:767px){
+        .nav{display:none}
+        .hero{padding:var(--space-6xl) 0 var(--space-4xl)}
+        .hero h1{font-size:var(--font-size-2xl)}
+        .hero p{font-size:var(--font-size-base)}
+        .feat-grid,.test-grid{grid-template-columns:1fr}
+        .metrics{grid-template-columns:1fr}
+        .charts{grid-template-columns:1fr}
+        .cta-inner{padding:var(--space-4xl) var(--space-2xl)}
+        .cta-inner h2{font-size:var(--font-size-2xl)}
+        .footer .wrap{flex-direction:column;gap:var(--space-lg);text-align:center}
+        .preview-body{padding:var(--space-lg)}
+      }
+      @media(max-width:639px){
+        .wrap{padding:0 var(--space-lg)}
+        .hero h1{font-size:var(--font-size-xl)}
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Header ── -->
+    <header class="site-header">
+      <div class="wrap">
+        <a href="#" class="logo">
+          <span class="logo-icon">C</span>
+          ChainLink
+        </a>
+        <nav class="nav">
+          <a href="#what-it-does">What It Does</a>
+          <a href="#testimonials">Stories</a>
+          <a href="membership.html">Membership</a>
+          <a href="https://github.com/jacoblbagent/bike-shop-dashboard" target="_blank">GitHub</a>
+          <a href="#" class="nav-cta">Live Demo</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ── Hero ── -->
+    <section class="hero">
+      <div class="wrap">
+        <span class="hero-tag">Built for shops like Sycamore, Squatch &amp; CykelWorx</span>
+        <h1 class="anim">The dashboard your <span>bike shop</span> deserves</h1>
+        <p class="anim a1">
+          Inventory, sales, customers, purchase orders, and reports — all in one place.
+          Purpose-built for independent bike shops that want to run smarter, not harder.
+        </p>
+        <div class="hero-actions anim a2">
+          <a href="#" class="btn-primary">Launch Demo</a>
+          <a href="https://github.com/jacoblbagent/bike-shop-dashboard" target="_blank" class="btn-secondary">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Dashboard Preview ── -->
+    <section class="preview">
+      <div class="wrap">
+        <div class="preview-card anim a3">
+          <div class="preview-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="preview-title">Dashboard — ChainLink</span>
+          </div>
+          <div class="preview-body">
+            <div class="metrics">
+              <div class="m-metric">
+                <span class="m-label">Total Revenue</span>
+                <span class="m-val">$84,250</span>
+                <span class="m-trend up">▲ 12.5%</span>
+              </div>
+              <div class="m-metric">
+                <span class="m-label">Total Orders</span>
+                <span class="m-val">342</span>
+                <span class="m-trend up">▲ 8.2%</span>
+              </div>
+              <div class="m-metric">
+                <span class="m-label">Active Customers</span>
+                <span class="m-val">128</span>
+                <span class="m-trend up">▲ 5.7%</span>
+              </div>
+              <div class="m-metric">
+                <span class="m-label">Low Stock Items</span>
+                <span class="m-val">14</span>
+                <span class="m-trend down">▼ 3</span>
+              </div>
+              <div class="m-metric">
+                <span class="m-label">Avg Order Value</span>
+                <span class="m-val">$246</span>
+                <span class="m-trend up">▲ 2.1%</span>
+              </div>
+              <div class="m-metric">
+                <span class="m-label">Pending POs</span>
+                <span class="m-val">7</span>
+              </div>
+            </div>
+            <div class="charts">
+              <div class="c-card">
+                <div class="ct">Revenue (12 months)</div>
+                <div class="bars">
+                  <div class="bar" style="height:60%"></div>
+                  <div class="bar" style="height:75%"></div>
+                  <div class="bar" style="height:55%"></div>
+                  <div class="bar" style="height:80%"></div>
+                  <div class="bar" style="height:65%"></div>
+                  <div class="bar" style="height:90%"></div>
+                  <div class="bar" style="height:70%"></div>
+                  <div class="bar" style="height:85%"></div>
+                  <div class="bar" style="height:95%"></div>
+                  <div class="bar" style="height:78%"></div>
+                  <div class="bar" style="height:88%"></div>
+                  <div class="bar" style="height:100%"></div>
+                </div>
+              </div>
+              <div class="c-card">
+                <div class="ct">Orders by Status</div>
+                <div class="bars" style="flex-direction:column;align-items:stretch;height:180px;justify-content:center;gap:var(--space-md);padding-bottom:0">
+                  <div style="display:flex;align-items:center;gap:var(--space-sm)">
+                    <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);width:80px">Completed</span>
+                    <div style="flex:1;height:24px;background:var(--color-border-light);border-radius:var(--radius-sm);overflow:hidden">
+                      <div style="width:52%;height:100%;background:var(--color-success);border-radius:var(--radius-sm)"></div>
+                    </div>
+                    <span style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text);width:36px;text-align:right">52%</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:var(--space-sm)">
+                    <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);width:80px">Pending</span>
+                    <div style="flex:1;height:24px;background:var(--color-border-light);border-radius:var(--radius-sm);overflow:hidden">
+                      <div style="width:22%;height:100%;background:var(--color-warning);border-radius:var(--radius-sm)"></div>
+                    </div>
+                    <span style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text);width:36px;text-align:right">22%</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:var(--space-sm)">
+                    <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);width:80px">Shipped</span>
+                    <div style="flex:1;height:24px;background:var(--color-border-light);border-radius:var(--radius-sm);overflow:hidden">
+                      <div style="width:18%;height:100%;background:var(--color-info);border-radius:var(--radius-sm)"></div>
+                    </div>
+                    <span style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text);width:36px;text-align:right">18%</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:var(--space-sm)">
+                    <span style="font-size:var(--font-size-xs);color:var(--color-text-muted);width:80px">Processing</span>
+                    <div style="flex:1;height:24px;background:var(--color-border-light);border-radius:var(--radius-sm);overflow:hidden">
+                      <div style="width:8%;height:100%;background:var(--color-accent);border-radius:var(--radius-sm)"></div>
+                    </div>
+                    <span style="font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);color:var(--color-text);width:36px;text-align:right">8%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Testimonials ── -->
+    <section class="section" id="testimonials">
+      <div class="wrap">
+        <span class="sec-label">✦ From the shop floor</span>
+        <h2 class="sec-title">What shop owners are saying</h2>
+        <p class="sec-sub">
+          ChainLink is used by independent bike shops across Western North Carolina.
+          Here's what they have to say.
+        </p>
+        <div class="test-grid">
+          <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>
+              "We were running our shop on a spreadsheet and a prayer. ChainLink
+              gave us real-time inventory visibility — now we know exactly what's
+              on the floor and what's on order. The low-stock alerts alone saved
+              us from three sold-out weekends this season."
+            </blockquote>
+            <div class="test-author">— Joe Driver</div>
+            <div class="test-role">Owner, CykelWorx · Brevard, NC</div>
+          </div>
+          <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>
+              "The customer tier system changed how we think about loyalty.
+              We can see at a glance who our Platinum customers are, what they
+              buy, and when they last came in. It's made our follow-ups personal
+              instead of random."
+            </blockquote>
+            <div class="test-author">— Clark Hollins</div>
+            <div class="test-role">Owner, Hearns Cycling · Asheville, NC</div>
+          </div>
+          <div class="test-card">
+            <div class="stars">★★★★★</div>
+            <blockquote>
+              "We rent bikes, sell bikes, and turn wrenches — ChainLink handles
+              all of it. The purchase order system with partial receiving is
+              exactly how a real shop works. No more chasing paper POs."
+            </blockquote>
+            <div class="test-author">— Squatch Crew</div>
+            <div class="test-role">Squatch Bikes &amp; Brews · Brevard, NC</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── What It Does ── -->
+    <section class="section" id="what-it-does">
+      <div class="wrap">
+        <span class="sec-label">✦ What It Does</span>
+        <h2 class="sec-title">Everything a bike shop needs, nothing it doesn't</h2>
+        <p class="sec-sub">
+          ChainLink is built from the ground up for the way bike shops actually work.
+          No bloated ERP — just the tools you reach for every day.
+        </p>
+        <div class="feat-grid">
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <h3>Dashboard &amp; Analytics</h3>
+            <p>See your revenue, orders, and customer metrics at a glance. Interactive charts with custom date ranges help you spot trends without digging through reports.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
+            <h3>Inventory (Bikes &amp; Parts)</h3>
+            <p>Track mountain, road, hybrid, and electric bikes plus every part category — brakes, drivetrain, wheels, suspension, and more. Low-stock alerts keep you from running out.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3>Customer CRM</h3>
+            <p>Know your riders. Track spend, order history, and loyalty tier (Bronze through Platinum). Filter by tier, search, and see who hasn't visited lately.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </div>
+            <h3>Sales &amp; Orders</h3>
+            <p>Ring up sales with line-item details. Seven order statuses, six payment methods — search, sort, and filter your full order history.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <h3>Purchase Orders</h3>
+            <p>Manage supplier orders from Draft to Received. Partial receiving means you can mark items as they arrive. Track lead times and expected dates.</p>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <h3>Reports</h3>
+            <p>Top products, inventory value by category, customer metrics, and sales summaries — generated for whatever period you need.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Brands ── -->
+    <section class="section" style="text-align:center">
+      <div class="wrap">
+        <span class="sec-label">✦ Built For</span>
+        <h2 class="sec-title">Works great with the brands you carry</h2>
+        <p class="sec-sub" style="margin:var(--space-md) auto 0">
+          ChainLink is brand-agnostic — track inventory for Specialized, Yeti, Giant,
+          Norco, Trek, Cannondale, or anything else your shop stocks.
+        </p>
+        <div class="brands">
+          <span class="brand">🚲 Mountain Bikes</span>
+          <span class="brand">🏁 Road Bikes</span>
+          <span class="brand">🔋 Electric Bikes</span>
+          <span class="brand">🚴 Hybrid</span>
+          <span class="brand">🧒 Kids Bikes</span>
+          <span class="brand">🔧 Parts &amp; Components</span>
+          <span class="brand">👕 Apparel &amp; Gear</span>
+          <span class="brand">🛞 Wheel &amp; Tire</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <section class="section cta">
+      <div class="wrap">
+        <div class="cta-inner">
+          <h2>Ready to run your shop smarter?</h2>
+          <p>
+            ChainLink is free and open-source. Clone the repo, spin it up, and
+            start managing your inventory, sales, and customers like a pro.
+          </p>
+          <div class="hero-actions">
+            <a href="#" class="btn-primary">Launch Demo</a>
+            <a href="https://github.com/jacoblbagent/bike-shop-dashboard" target="_blank" class="btn-secondary">View on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer class="footer">
+      <div class="wrap">
+        <span class="f-text">© 2026 ChainLink — open-source bike shop dashboard</span>
+        <div class="f-links">
+          <a href="https://github.com/jacoblbagent/bike-shop-dashboard" target="_blank">GitHub</a>
+          <a href="#what-it-does">What It Does</a>
+          <a href="#testimonials">Stories</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', e => {
+          const target = document.querySelector(link.getAttribute('href'));
+          if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+        });
+      });
+    </script>
+  </body>
+</html>

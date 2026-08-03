@@ -7,12 +7,17 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "db": "node server/index.cjs",
+    "dev:full": "node server/index.cjs & sleep 1 && vite --host 0.0.0.0"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
+    "cors": "^2.8.6",
     "date-fns": "^4.1.0",
+    "express": "^5.2.1",
     "papaparse": "^5.5.2",
+    "pg": "^8.22.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.54.2",
