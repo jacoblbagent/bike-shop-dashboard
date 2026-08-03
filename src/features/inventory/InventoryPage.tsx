@@ -180,7 +180,6 @@ export default function InventoryPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Inventory</h1>
           <p className={styles.subtitle}>Manage bikes and parts inventory</p>
         </div>
       </div>

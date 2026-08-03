@@ -179,7 +179,6 @@ export default function PurchaseOrdersPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Purchase Orders</h1>
           <p className={styles.subtitle}>{purchases.length} total purchase orders</p>
         </div>
         <Button onClick={() => setShowNewPO(true)}>

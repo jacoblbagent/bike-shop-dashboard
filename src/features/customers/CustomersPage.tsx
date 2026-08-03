@@ -120,7 +120,6 @@ export default function CustomersPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Customers</h1>
           <p className={styles.subtitle}>{customers.length} total customers</p>
         </div>
       </div>

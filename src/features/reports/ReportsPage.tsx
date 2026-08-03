@@ -113,9 +113,6 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Reports</h1>
-        </div>
         <div className={styles.metricsGrid}>
           {Array.from({ length: 4 }, (_, i) => (
             <Card key={i} padding="lg" className={styles.metricSkeleton}>
@@ -207,7 +204,6 @@ export default function ReportsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Reports</h1>
           <p className={styles.subtitle}>Key metrics and performance overview</p>
         </div>
         <Button variant="outline" onClick={handleExportInventory}>

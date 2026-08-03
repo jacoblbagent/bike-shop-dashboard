@@ -331,7 +331,6 @@ export default function DashboardPage() {
 
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <h1 className={styles.title}>Dashboard</h1>
             <p className={styles.subtitle}>
               Error loading dashboard data
             </p>
@@ -428,7 +427,6 @@ export default function DashboardPage() {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <h1 className={styles.title}>Dashboard</h1>
           <p className={styles.subtitle}>
             Welcome back. Here&apos;s what&apos;s happening at your shop today.
           </p>

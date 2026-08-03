@@ -197,7 +197,6 @@ export default function SalesPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Sales</h1>
           <p className={styles.subtitle}>{orders.length} total orders</p>
         </div>
         <Button onClick={() => setShowNewOrder(true)}>
