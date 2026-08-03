@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bike Pro — Customers</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.min.css">
+<style>
+:root{--primary:#2563eb;--success:#16a34a;--warning:#f59e0b;--danger:#dc2626;
+  --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;--s400:#94a3b8;
+  --s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b;--s900:#0f172a;
+  --radius:8px;--shadow-sm:0 1px 2px rgba(0,0,0,.06);--focus-ring:0 0 0 3px rgba(37,99,235,.45)}
+*{margin:0;padding:0;box-sizing:border-box} body{font-family:'Inter',system-ui,sans-serif;background:var(--s100);color:var(--s700);font-size:14px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto;padding:24px}
+a.back{color:var(--primary);text-decoration:none;font-size:.8125rem} a.back:hover{text-decoration:underline}
+h1{font-size:1.5rem;font-weight:700;margin-bottom:4px} .sub{color:var(--s500);font-size:.875rem;margin-bottom:20px}
+
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi{background:#fff;border-radius:var(--radius);padding:20px;border:1px solid var(--s200);box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--s500);font-weight:500}
+.kpi-val{font-size:1.875rem;font-weight:700;margin-top:4px} .kpi-trend{font-size:.75rem;margin-top:4px} .up{color:var(--success)} .down{color:var(--danger)}
+
+/* Toolbar */
+.toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.search{padding:7px 12px 7px 32px;border:1px solid var(--s300);border-radius:var(--radius);font-size:.875rem;width:280px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cline x1='16.66' y1='16.66' x2='21' y2='21' width='2'/%3E%3C/svg%3E") 9px center no-repeat;background-size:14px}
+.search:focus{outline:none;border-color:var(--primary);box-shadow:var(--focus-ring)}
+select,.btn{padding:7px 14px;border:1px solid var(--s200);border-radius:var(--radius);font-size:.8125rem;background:#fff;color:var(--s600);cursor:pointer}
+.btn-p{background:var(--primary);color:#fff;border:none}.btn-p:hover{background:#1d4ed8}
+
+/* Table */
+.tw{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--s200);margin-bottom:24px}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem} thead{background:var(--s50)} th{padding:10px 14px;text-align:left;font-weight:600;color:var(--s500);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--s200)} td{padding:10px 14px;border-bottom:1px solid var(--s100);vertical-align:middle} tbody tr:hover{background:var(--s50);cursor:pointer}
+
+/* Loyalty badge */
+.loyalty-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:9999;font-size:.7rem;font-weight:600}
+.gold{background:#fef3c7;color:#92400e} .silver{background:#f1f5f9;color:#475569} .bronze{background:#fed7aa;color:#9a3412} .member{background:#dbeafe;color:#1d4ed8}
+
+/* Detail drawer */
+.drawer{position:fixed;top:0;right:0;width:420px;height:100%;background:#fff;border-left:1px solid var(--s200);box-shadow:var(--shadow-sm);z-index:100;padding:24px;overflow-y:auto}
+.drawer-close{align-self:flex-end;background:none;border:none;font-size:1.25rem;color:var(--s400);cursor:pointer;margin-bottom:16px}
+.d-title{font-size:1.125rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0}
+.d-section{margin-bottom:20px} .d-section h3{font-size:.875rem;font-weight:600;margin-bottom:8px;color:var(--s600)}
+.points-bar{height:6px;border-radius:3px;background:var(--s200);overflow:hidden;margin-top:4px} .points-fill{height:100%;border-radius:3px;background:var(--primary)}
+.stat-row{display:flex;gap:12px;margin-bottom:8px} .stat-box{flex:1;padding:12px;background:var(--s50);border-radius:var(--radius);text-align:center} .stat-num{font-size:1.25rem;font-weight:700} .stat-lbl{font-size:.7rem;color:var(--s400)}
+.px-table td{padding:8px 14px}
+@media(max-width:1024px){.kpi-row{grid-template-columns:repeat(2,1fr)}.search{width:160px}} @media(max-width:640px){.kpi-row{grid-template-columns:1fr}.wrap{padding:16px}}
+*:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:inherit}
+</style>
+</head><body>
+<div id="app">
+<div class="wrap">
+  <a href="dashboard.html" class="back">&larr; Dashboard</a>
+  <h1>Customer Management</h1>
+  <p class="sub">Loyalty points, purchase history, and profiles.</p>
+
+  <!-- KPI Summary -->
+  <div class="kpi-row">
+    <div class="kpi" v-for="k in kpis"><span class="kpi-label">{{k.label}}</span><div class="kpi-val">{{k.value}}</div><div class="kpi-trend" :class="k.up?'up':'down'">{{k.up?'\u25B2':'\u25BC'}} {{k.trend}}</div></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input class="search" placeholder="Search customers..." v-model="search">
+    <select v-model="tierFilter"><option value="">All Tiers</option><option>Gold</option><option>Silver</option><option>Bronze</option><option>Member</option></select>
+    <button class="btn btn-p" @click="showNew=true">&#43; Add Customer</button>
+  </div>
+
+  <!-- Table -->
+  <div class="tw">
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Tier</th><th>Points</th><th>Purchases</th><th style="text-align:right">Lifetime</th></tr></thead>
+      <tbody>
+        <tr v-for="c in filtered" @click="detail(c)"><td>{{c.name}}</td><td>{{c.email}}</td>
+          <td><span class="loyalty-badge" :class="c.tier.toLowerCase()">{{c.tier}}</span></td>
+          <td>{{c.points.toLocaleString()}}</td><td>{{c.purchases}}</td>
+          <td style="text-align:right">{{fmtLtv(c.ltv)}}</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- Detail Drawer -->
+  <template v-if="sel">
+    <div class="drawer">
+      <button class="drawer-close" @click="sel=null">&times;</button>
+      <div class="d-title"><div class="avatar" :style="{background:tierColor(sel.tier)}">{{initials(sel.name)}}</div><span>{{sel.name}}</span></div>
+      <div class="stat-row"><div class="stat-box"><div class="stat-num">{{fmtLtv(sel.ltv)}}</div><div class="stat-lbl">Lifetime Value</div></div><div class="stat-box"><div class="stat-num">{{sel.points.toLocaleString()}}</div><div class="stat-lbl">Points</div></div><div class="stat-box"><div class="stat-num">{{sel.purchases}}</div><div class="stat-lbl">Orders</div></div></div>
+      <div class="d-section"><h3>Loyalty Progress — {{sel.tier}}</h3><div style="font-size:.75rem;color:var(--s400)">Points to {{nextTier(sel.tier)}}: {{pointsNeeded(sel.points)}}</div><div class="points-bar"><div class="points-fill" :style="{width:pctProgress(sel.points)+'%'}"></div></div></div>
+      <div class="d-section"><h3>Purchase History</h3><table class="px-table"><thead><tr><th>Date</th><th style="text-align:right">Total</th></tr></thead><tbody><tr v-for="p in sel.history"><td>{{fmtDate(p.date)}}</td><td style="text-align:right">{{p.total>0?('$'+p.total.toLocaleString()):'Refund: '+Math.abs(p.total).toLocaleString()}}</td></tr></tbody></table></div>
+      <div class="d-section"><h3>Contact</h3><div style="font-size:.875rem;color:var(--s600)">{{sel.phone}}<br>Member since {{sel.since}}</div></div>
+    </div>
+  </template>
+
+  <!-- Add Customer Modal -->
+  <template v-if="showNew">
+    <div class="drawer" style="right:auto;left:0">
+      <button class="drawer-close" @click="showNew=false">&times;</button>
+      <div class="d-title">&#43; New Customer</div>
+      <form @submit.prevent="addCustomer" style="display:flex;flex-direction:column;gap:12px">
+        <label>Name<input v-model="nf.name" required style="width:100%;padding:7px 12px;border:1px solid var(--s300);border-radius:var(--radius)"></label>
+        <label>Email<input type="email" v-model="nf.email" required style="width:100%;padding:7px 12px;border:1px solid var(--s300);border-radius:var(--radius)"></label>
+        <label>Phone<input v-model="nf.phone" style="width:100%;padding:7px 12px;border:1px solid var(--s300);border-radius:var(--radius)"></label>
+        <button type="submit" class="btn btn-p" style="align-self:flex-start">Create</button>
+      </form>
+    </div>
+  </template>
+</div></div>
+
+<script>const {createApp}=Vue;
+createApp({data(){return{search:'',tierFilter:'',sel:null,showNew:false,
+nf:{name:'',email:'',phone:''},
+kpis:[{label:'Total Customers',value:'384',trend:'8.1%',up:true},{label:'Gold Members',value:'42',trend:'14.3%',up:true},{label:'Avg LTV',value:'$1,247',trend:'6.2%',up:true},{label:'Redemptions / Mo',value:'67',trend:'2.1%',up:false}],
+customers:[
+{id:1,name:'Maria Chen',email:'maria@email.com',phone:'(555) 102-4891',since:'2022-03',tier:'Gold',points:8420,purchases:27,ltv:4250,history:[{date:'2026-07-28',total:284.5},{date:'2026-07-15',total:129},{date:'2026-06-30',total:479}]},
+{id:2,name:'Alex Rivera',email:'alex.r@email.com',phone:'(555) 293-1847',since:'2023-01',tier:'Silver',points:3150,purchases:12,ltv:1840,history:[{date:'2026-07-20',total:645},{date:'2026-06-10',total:89}]},
+{id:3,name:'Priya Patel',email:'priya.p@email.com',phone:'(555) 484-7293',since:'2021-09',tier:'Gold',points:12760,purchases:41,ltv:7120,history:[{date:'2026-07-27',total:520},{date:'2026-07-01',total:310}]},
+{id:4,name:'David Park',email:'d.park@email.com',phone:'(555) 791-0284',since:'2024-06',tier:'Bronze',points:890,purchases:5,ltv:420,history:[{date:'2026-07-25',total:89.99},{date:'2026-04-11',total:42}]},
+{id:5,name:'Sarah Kim',email:'s.kim@email.com',phone:'(555) 339-9182',since:'2023-07',tier:'Silver',points:4210,purchases:18,ltv:2340,history:[{date:'2026-07-26',total:195},{date:'2026-07-12',total:149.5}]},
+{id:6,name:'James O\u2019Brien',email:'j.obrien@email.com',phone:'(555) 847-1039',since:'2025-01',tier:'Member',points:120,purchases:2,ltv:65,history:[{date:'2026-07-22',total:34.99}]},
+]}},computed:{filtered(){const s=this.search.toLowerCase();return this.customers.filter(c=>{if(this.tierFilter&&c.tier!==this.tierFilter)return false;if(s&&!c.name.toLowerCase().includes(s)&&!c.email.toLowerCase().includes(s))return false;return true;})}},methods:{
+detail(c){this.sel={...c};},
+fmtLtv(n){return'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})},
+fmtDate(d){const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})},
+tierColor(t){return{Gold:'#f59e0b',Silver:'#64748b',Bronze:'#d97706',Member:'#3b82f6'}[t]||'#64748b'},
+initials(n){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)},
+nextTier(t){const o=['Member','Bronze','Silver','Gold'];const i=o.indexOf(t);return i<o.length-1?o[i+1]:'Max'},
+pointsNeeded(p){const thr={Gold:5000,Silver:2500,Bronze:1000};return p%(Object.keys(thr).length>0?thr[this.tierFilter]||2500:2500)},
+pctProgress(p){const t=Math.ceil(p/2500)*2500;return Math.min(98,Math.round(((p%2500)/2500)*100))},
+addCustomer(){this.customers.push({id:Date.now(),name:this.nf.name,email:this.nf.email,phone:this.nf.phone||'—',since:'2026-07',tier:'Member',points:0,purchases:0,ltv:0,history:[]});this.showNew=false;this.nf={name:'',email:'',phone:''}},
+}}).mount('#app');</script>
+</body></html>

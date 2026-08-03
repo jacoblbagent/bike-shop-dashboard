@@ -1,0 +1,10 @@
+.wrapper { position: relative; display: flex; align-items: center; }
+.icon { position: absolute; left: var(--space-md); color: var(--color-text-muted); pointer-events: none; }
+.input { @include input-base; padding-left: 36px; padding-right: 36px; }
+.clear {
+  position: absolute; right: var(--space-sm);
+  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: var(--radius-sm);
+  color: var(--color-text-muted); font-size: var(--font-size-xs);
+  &:hover { background: var(--color-surface-hover); color: var(--color-text); }
+}

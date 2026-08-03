@@ -1,0 +1,21 @@
+brand,model,year,category,frameSize,color,sku,price,cost,quantity,reorderPoint
+Trek,Marlin 7,2026,Mountain,M,Matte Black,BIKE-TRE-001,1249,749,8,3
+Specialized,Stumpjumper,2026,Mountain,L,Gloss White,BIKE-SPC-002,3499,2099,5,3
+Giant,Defy Advanced 2,2026,Road,M,Navy Blue,BIKE-GIA-003,2799,1679,3,2
+Canyon,Torque CF 7,2026,Mountain,L,Racing Red,BIKE-CAN-004,3299,1979,2,2
+Scott,Scale 970,2026,Mountain,S,Forest Green,BIKE-SCO-005,1199,719,10,4
+Cannondale,Synapse Carbon 105,2026,Road,M,Steel Grey,BIKE-CAN-006,3299,1979,4,2
+Santa Cruz,Hightower,2026,Mountain,L,Matte Black,BIKE-SAN-007,4299,2579,3,2
+Yeti,SB140,2026,Mountain,M,Coral,BIKE-YET-008,5399,3239,2,1
+Trek,Domane SL5,2026,Road,L,Gloss White,BIKE-TRE-009,3699,2219,3,2
+Specialized,Tarmac SL7,2026,Road,M,Racing Red,BIKE-SPC-010,4499,2699,2,1
+Giant,Talon 2,2026,Mountain,M,Navy Blue,BIKE-GIA-011,849,509,12,5
+Canyon,Aeroad CF SLX 8,2026,Road,L,Matte Black,BIKE-CAN-012,5999,3599,1,1
+Scott,Addict RC 30,2026,Road,M,Steel Grey,BIKE-SCO-013,3499,2099,3,2
+Cannondale,Trail 6,2026,Mountain,S,Forest Green,BIKE-CAN-014,799,479,15,5
+Santa Cruz,5010,2026,Mountain,M,Gloss White,BIKE-SAN-015,3899,2339,4,2
+Yeti,SB120,2026,Trail,M,Navy Blue,BIKE-YET-016,4999,2999,2,1
+Trek,Emonda SL6,2026,Road,S,Racing Red,BIKE-TRE-017,4499,2699,2,1
+Specialized,Rockhopper,2026,Mountain,M,Matte Black,BIKE-SPC-018,899,539,10,4
+Giant,Escape 3,2026,Hybrid,L,Steel Grey,BIKE-GIA-019,599,359,8,3
+Canyon,Spectral 125 AL 5,2026,Mountain,M,Coral,BIKE-CAN-020,2499,1499,5,3

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bike Pro — Dashboard</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+/* ===== Design Tokens (DESIGN_TOKENS.md) ===== */
+:root[data-theme="light"]{
+  --primary:#2563eb;--primary-hover:#1d4ed8;--primary-50:#eff6ff;--primary-100:#dbeafe;
+  --success:#16a34a;--success-bg:#dcfce7;
+  --warning:#f59e0b;--warning-bg:#fef3c7;
+  --danger:#dc2626;--danger-bg:#fee2e2;
+  --info:#3b82f6;--info-bg:#dbeafe;
+  --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;--s400:#94a3b8;
+  --s500:#64748b;--s600:#475569;--s700:#334155;--s800:#1e293b;--s900:#0f172a;
+  --bg:var(--s50);--card:#fff;--sidebar-bg:var(--s900);--sidebar-tx:#f1f5f9;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.06);--shadow-md:0 4px 8px rgba(0,0,0,.08);--shadow-lg:0 10px 24px rgba(0,0,0,.12);
+  --radius:8px;--radius-lg:12px;
+  --focus-ring:0 0 0 3px rgba(37,99,235,.45);
+}
+:root[data-theme="dark"]{
+  --bg:#0f172a;--card:#1e293b;--sidebar-bg:#0b1120;--sidebar-tx:#cbd5e1;
+  --s50:#1e293b;--s100:#334151;--s200:#475569;--s300:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--s700);font-size:14px;line-height:1.5;transition:background .15s,color .15s}
+
+/* ===== App Layout ===== */
+.app{display:flex;min-height:100vh}
+
+/* Sidebar — 260px fixed */
+.sidebar{width:260px;min-width:260px;background:var(--sidebar-bg);color:var(--sidebar-tx);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .25s}
+.sidebar-brand{padding:16px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-brand span{font-size:1.125rem;font-weight:700;color:#fff}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-section{margin-bottom:8px}
+.nav-label{padding:6px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--s400);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);color:var(--s300);text-decoration:none;font-size:.875rem;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:var(--primary);color:#fff;font-weight:500}
+.nav-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.avatar-sm{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600}
+.user-info{font-size:.8rem;color:var(--s300)}
+.user-name{color:#fff;font-weight:500}
+
+/* Main */
+.main-wrap{margin-left:260px;flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* Header — 56px */
+.header{height:56px;background:var(--card);border-bottom:1px solid var(--s200);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:50}
+.breadcrumbs{font-size:.8rem;color:var(--s500)}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.search-box{padding:6px 12px 6px 32px;border:1px solid var(--s300);border-radius:var(--radius);font-size:.875rem;width:320px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cline x1='16.66' y1='16.66' x2='21' y2='21' width='2'/%3E%3C/svg%3E") 9px center no-repeat;background-size:14px;transition:border-color .15s}
+.search-box:focus{outline:none;border-color:var(--primary);box-shadow:var(--focus-ring)}
+
+/* Content */
+.content{padding:24px;max-width:1400px;width:100%}
+.page-title{font-size:1.5rem;font-weight:700;margin-bottom:4px;color:var(--s900)}
+.page-subtitle{color:var(--s500);font-size:.875rem;margin-bottom:20px}
+
+/* KPI Cards */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--card);border-radius:var(--radius-lg);padding:20px;border:1px solid var(--s200);box-shadow:var(--shadow-sm)}
+.kpi-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--s500);font-weight:500}
+.kpi-value{font-size:1.875rem;font-weight:700;margin-top:4px}
+.kpi-trend{font-size:.75rem;margin-top:4px;display:flex;align-items:center;gap:3px}
+.kpi-trend.up{color:var(--success)}
+.kpi-trend.down{color:var(--danger)}
+.kpi-icon{width:40px;height:40px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.25rem}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.grid-3-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.panel{background:var(--card);border-radius:var(--radius-lg);border:1px solid var(--s200);box-shadow:var(--shadow-sm);overflow:hidden}
+.panel-head{padding:16px 20px;border-bottom:1px solid var(--s200);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:.875rem;font-weight:600}
+.panel-body{padding:20px}
+
+/* Activity */
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--s100)}
+.activity-item:last-child{border-bottom:none}
+.act-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+.act-text{font-size:.8125rem;color:var(--s600)}
+.act-time{font-size:.7rem;color:var(--s400);margin-top:2px}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.8125rem}
+th{padding:10px 14px;text-left;font-weight:600;background:var(--s50);color:var(--s500);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--s200)}
+td{padding:10px 14px;border-bottom:1px solid var(--s100)}
+tr:hover td{background:var(--s50)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:9999;font-size:.7rem;font-weight:500}
+.badge-success{background:var(--success-bg);color:var(--success)}
+.badge-danger{background:var(--danger-bg);color:var(--danger)}
+
+/* Buttons */
+.btn-p{padding:7px 16px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:.8125rem;font-weight:500;cursor:pointer}
+.link-blue{color:var(--primary);text-decoration:none;font-size:.8125rem;cursor:pointer}
+.link-blue:hover{text-decoration:underline}
+
+/* Hamburger */
+.hamburger{display:none;width:36px;height:36px;border-radius:var(--radius);border:1px solid var(--s200);background:#fff;color:var(--s600);align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem}
+@media(max-width:1024px){.kpi-row{grid-template-columns:repeat(2,1fr)}.hamburger{display:flex}.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}}
+@media(max-width:640px){.kpi-row,.grid-2,.grid-3-1{grid-template-columns:1fr}.content{padding:16px}.search-box{width:200px}}
+
+/* Accessibility */
+*:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:inherit}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <nav class="sidebar" :class="{open:showSidebar}" aria-label="Main navigation">
+    <div class="sidebar-brand">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="7" cy="21" r="5" stroke="#fff" stroke-width="2"/><circle cx="21" cy="21" r="5" stroke="#fff" stroke-width="2"/><circle cx="14" cy="7" r="4" stroke="#fff" stroke-width="2"/><path d="M7 16V7.5M21 16V7.5" stroke="#fff" stroke-width="1.5"/></svg>
+      <span>Bike Pro</span>
+    </div>
+    <div class="sidebar-nav">
+      <button @click="go('dashboard')" :class="['nav-item',{'active':currentPage==='dashboard'}]" :aria-current="currentPage==='dashboard' ? 'page' : false">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="10" rx="1"/><rect x="14" y="8" width="7" height="5" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/><rect x="14" y="16" width="7" height="5" rx="1"/></svg>
+        Dashboard
+      </button>
+      <div class="nav-section"><div class="nav-label">Management</div></div>
+      <button @click="go('inventory')" :class="['nav-item',{'active':currentPage==='inventory'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-5 9 5v11l-9 5-9-5z"/></svg>
+        Inventory
+      </button>
+      <button @click="go('sales')" :class="['nav-item',{'active':currentPage==='sales'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-5 4 4 5-6"/></svg>
+        Sales &amp; Orders
+      </button>
+      <button @click="go('customers')" :class="['nav-item',{'active':currentPage==='customers'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-1a6 6 0 0112 0v1"/></svg>
+        Customers
+      </button>
+      <div class="nav-section"><div class="nav-label">Operations</div></div>
+      <button @click="go('service')" :class="['nav-item',{'active':currentPage==='service'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4"/></svg>
+        Calendar
+      </button>
+      <button @click="go('suppliers')" :class="['nav-item',{'active':currentPage==='suppliers'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16h3a2 2 0 002-2V4a2 2 0 00-2-2H5a2 2 0 00-2 2v9.07a2 2 0 00.59 1.4l5.67 5.67A2 2 0 0012 21H16z"/><path d="M1 10h20"/></svg>
+        Suppliers &amp; POs
+      </button>
+      <div class="nav-section"><div class="nav-label">Insights</div></div>
+      <button @click="go('reports')" :class="['nav-item',{'active':currentPage==='reports'}]">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        Reports
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="avatar-sm">{{initials}}</div>
+      <div class="user-info"><div class="user-name">Jane Broughton</div><div>Store Manager</div></div>
+    </div>
+  </nav>
+
+  <div class="main-wrap">
+    <header class="header">
+      <button class="hamburger" @click="showSidebar=!showSidebar" aria-label="Toggle menu">&#9776;</button>
+      <div class="breadcrumbs">{{breadcrumb}}</div>
+      <input class="search-box" placeholder="Search orders, inventory, customers ... " aria-label="Global search">
+      <div class="header-right">
+        <button class="icon-btn" style="width:36px;height:36px;border-radius:var(--radius);border:1px solid var(--s200);background:#fff;color:var(--s500);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative" aria-label="Notifications">&#128276;<span style="position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid #fff"></span></button>
+        <button class="theme-toggle" @click="toggleTheme" style="font-size:.8rem;padding:4px 8px;border-radius:var(--radius);border:1px solid var(--s200);background:#fff;cursor:pointer;color:var(--s600)">{{theme==='dark'?'\u2600\uFE0F':'\uD83C\uDF19'}}</button>
+      </div>
+    </header>
+
+    <main class="content" id="main-content" role="main">
+      <!-- DASHBOARD HOME -->
+      <template v-if="currentPage==='dashboard'">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome back, Jane. Here is what is happening today.</p>
+        <div class="kpi-row">
+          <div class="kpi-card" v-for="k in kpis">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="kpi-label">{{k.label}}</span>
+              <div class="kpi-icon" :style="{background:k.bg,color:'#fff'}">{{k.icon}}</div>
+            </div>
+            <div class="kpi-value">{{k.value}}</div>
+            <div class="kpi-trend" :class="k.up?'up':'down'">{{k.up?'\u25B2':'\u25BC'}} {{k.trend}} vs last month</div>
+          </div>
+        </div>
+        <div class="grid-3-1">
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Revenue — Last 12 Months</span></div>
+            <div class="panel-body"><canvas id="revenueChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Sales by Category</span></div>
+            <div class="panel-body"><canvas id="categoryChart"></canvas></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Top Products</span><a class="link-blue">View all &rarr;</a></div>
+            <table>
+              <thead><tr><th>#</th><th>Product</th><th>Qty Sold</th><th style="text-align:right">Revenue</th></tr></thead>
+              <tbody><tr v-for="(p,i) in topProducts"><td>{{i+1}}</td><td>{{p.name}}</td><td>{{p.qty}}</td><td style="text-align:right">${{p.rev.toLocaleString()}}</td></tr></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><span class="panel-title">Recent Activity</span></div>
+            <div class="panel-body">
+              <div class="activity-item" v-for="a in activity">
+                <div class="act-icon" :style="{background:a.bg}">{{a.emoji}}</div>
+                <div><div class="act-text">{{a.text}}</div><div class="act-time">{{a.time}}</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="panel-title" style="color:var(--danger)">&#9888;&#65039; Low Stock Alerts</span></div>
+          <table>
+            <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th style="text-align:right">On Hand</th><th style="text-align:right">Reorder Pt</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody><tr v-for="s in lowStock"><td>{{s.sku}}</td><td>{{s.name}}</td><td>{{s.cat}}</td><td style="text-align:right">{{s.onHand}}</td><td style="text-align:right">{{s.reorder}}</td><td><span class="badge badge-danger">Low</span></td><td><a class="link-blue" @click="go('inventory')">Order &rarr;</a></td></tr></tbody>
+          </table>
+        </div>
+      </template>
+
+      <!-- PLACEHOLDER PAGES -->
+      <template v-else>
+        <h1 class="page-title">{{pageTitle}}</h1>
+        <p class="page-subtitle">{{pageSubtitle}}</p>
+        <div class="panel"><div class="panel-body" style="text-align:center;padding:48px 20px">
+          <p style="color:var(--s400);margin-bottom:16px">This section is under construction.</p>
+          <a :href="pageLink || '#'">{{pageLinkLabel}}</a></div></div>
+      </template>
+    </main>
+  </div>
+</div>
+
+<script>
+const {createApp} = Vue;
+createApp({
+  data() { return {
+    currentPage: 'dashboard', theme: localStorage.getItem('theme')||'light', showSidebar: false,
+    revenueChart: null, categoryChart: null,
+    kpis: [
+      {label:'Total Revenue',value:'$42,580',trend:'12.5%',up:true,icon:'$',bg:'#2563eb'},
+      {label:'Active Orders',value:'73',trend:'3.2%',up:true,icon:'\uD83D\uDCE6',bg:'#16a34a'},
+      {label:'Inventory Items',value:'1,247',trend:'0.8%',up:false,icon:'\uD83D\uDEF1',bg:'#f59e0b'},
+      {label:'Service Tickets',value:'18',trend:'22.1%',up:true,icon:'\uD83D\uDD27',bg:'#7c3aed'},
+    ],
+    topProducts: [
+      {name:'Grip Lock MTB Tires',qty:47,rev:3760},
+      {name:'Carbon Fiber Fork RS',qty:23,rev:9200},
+      {name:'Hydraulic Disc Brake Set',qty:31,rev:4650},
+      {name:'Ergo Comfort Saddle',qty:38,rev:2660},
+      {name:'Chain Lube AW Gel',qty:55,rev:1375},
+    ],
+    activity:[
+      {emoji:'\uD83D\uDED2',bg:'#dbeafe',text:'New order #ORD-2026-0089 by Maria Chen — $284.50',time:'2 min ago'},
+      {emoji:'\uD83D\uDCE6',bg:'#dcfce7',text:'Shipment SHP-4482 from Shimano arrived (14 items)',time:'38 min ago'},
+      {emoji:'\u26A0\uFE0F',bg:'#fef3c7',text:'Low stock: Mountain Bike Pedals below reorder point',time:'1 hr ago'},
+      {emoji:'\uD83D\uDD27',bg:'#e2e8f0',text:'Service #SC-312 completed — Trek tune-up for Alex Rivera',time:'1 hr ago'},
+    ],
+    lowStock:[
+      {sku:'SKU-7742',name:'MTB Flat Lock Pedals',cat:'Drivetrain',onHand:3,reorder:10},
+      {sku:'SKU-2190',name:'Helmet Liner Kit M/L',cat:'Safety',onHand:5,reorder:15},
+      {sku:'SKU-6653',name:'Grip Lock Handlebars',cat:'Cockpit',onHand:8,reorder:20},
+    ],
+  }},
+  computed:{
+    pageTitle(){const m={sales:'Sales & Orders',inventory:'Inventory',customers:'Customers',service:'Calendar',suppliers:'Suppliers & POs',reports:'Reports'};return m[this.currentPage]||'Dashboard';},
+    pageSubtitle(){const m={sales:'Manage orders, quotes, invoices',inventory:'Track stock & products',customers:'Loyalty & purchase history',service:'Work orders, kanban tracking',suppliers:'Vendor catalog & incoming POs',reports:'Revenue, margins, inventory'};return m[this.currentPage]||'';},
+    pageLink(){return this.currentPage==='inventory'?'index.html':this.currentPage==='sales'?'sales-orders.html':'#';},
+    pageLinkLabel(){return (this.currentPage==='inventory'?'\uD83D\uDCE6 Open Inventory Manager':this.currentPage==='sales'?'\uD83D\uDCCA Open Sales & Orders':'\u270F\uFE0F Under Construction');},
+    breadcrumb(){const m={dashboard:'Home / Dashboard',inventory:'Management / Inventory',sales:'Management / Sales & Orders',customers:'Management / Customers',service:'Operations / Calendar',suppliers:'Operations / Suppliers',reports:'Insights / Reports'};return m[this.currentPage]||'';},
+    initials(){return 'JB';},
+  },
+  watch:{currentPage(){this.showSidebar=false;}},
+  methods:{
+    go(page){this.currentPage=page;},
+    toggleTheme(){this.theme=this.theme==='light'?'dark':'light';localStorage.setItem('theme',this.theme);document.documentElement.setAttribute('data-theme',this.theme);
+      this.$nextTick(()=>{this.initCharts();});
+    },
+    initCharts(){
+      const isDark=this.theme==='dark';
+      const gc=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.06)';
+      const rCtx=document.getElementById('revenueChart');if(rCtx){
+        if(this.revenueChart)this.revenueChart.destroy();
+        this.revenueChart=new Chart(rCtx,{type:'line',data:{labels:['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{label:'Revenue ($)',data:[28400,31200,29800,33500,35100,37200,34800,36900,39200,41600,40100,42580],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.08)',fill:true,tension:.4,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:gc},ticks:{callback:v=>'$'+(v/1000)+'k'}}}}}});
+      }
+      const cCtx=document.getElementById('categoryChart');if(cCtx){
+        if(this.categoryChart)this.categoryChart.destroy();
+        this.categoryChart=new Chart(cCtx,{type:'doughnut',data:{labels:['Road','MTB','E-Bike','Accessories','Apparel'],datasets:[{data:[32,18,24,16,10],backgroundColor:['#2563eb','#16a34a','#f59e0b','#7c3aed','#ec4899']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:12,font:{size:11}}}},cutout:'65%'}}});
+      }
+    },
+  },
+  mounted(){
+    document.documentElement.setAttribute('data-theme',this.theme);
+    this.$nextTick(()=>{this.initCharts();});
+  },
+}).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: width var(--transition-base);
+  overflow-y: auto;
+  @include scrollbar-thin;
+
+  &.collapsed {
+    width: var(--sidebar-collapsed-width);
+  }
+
+  @include md {
+    display: none;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-lg);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  min-height: var(--header-height);
+
+  &.collapsed {
+    justify-content: center;
+    padding: var(--space-lg) 0;
+  }
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--sidebar-text);
+  transition: all var(--transition-fast);
+
+  &:hover {
+    color: var(--sidebar-text-active);
+    background: rgba(255,255,255,0.06);
+  }
+}
+
+.logoText {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--sidebar-text-active);
+  white-space: nowrap;
+}
+
+.nav {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--sidebar-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sidebar-text-active);
+    background: rgba(255,255,255,0.06);
+  }
+
+  &.activeLink {
+    color: var(--sidebar-text-active);
+    background: var(--color-accent);
+  }
+}
+
+.spacer {
+  flex: 1;
+  min-height: 0;
+}
+
+.bottomSection {
+  padding: var(--space-md);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.authDivider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: var(--space-xs) 0;
+}

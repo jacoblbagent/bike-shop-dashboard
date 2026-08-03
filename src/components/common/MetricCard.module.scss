@@ -1,0 +1,7 @@
+.card { @include card; padding: var(--space-lg); }
+.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+.label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.iconIcon { display: flex; color: var(--color-text-muted); }
+.valueRow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
+.value { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.trendValue { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); white-space: nowrap; }

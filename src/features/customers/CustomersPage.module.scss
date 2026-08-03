@@ -1,0 +1,46 @@
+@use "@/styles/abstracts" as *;
+
+.page {
+  padding: var(--space-3xl) 0;
+}
+
+.header {
+  @include flex-between;
+  margin-bottom: var(--space-2xl);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.toolbar {
+  @include flex-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.loaderWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6xl) 0;
+}
+
+.currency {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+// Responsive
+@include md {
+  .page { padding: var(--space-lg) 0; }
+  .header { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+  .toolbar { flex-direction: column; align-items: stretch; }
+}

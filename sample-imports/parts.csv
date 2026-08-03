@@ -1,0 +1,31 @@
+name,category,brand,sku,price,cost,quantity,reorderPoint
+Hydraulic Disc Brake Set,Brakes,Shimano,PRT-BRAK-001,189,104,12,5
+11-Speed Cassette,Drivetrain,SRAM,PRT-DRIV-002,89,49,25,8
+Carbon Drop Bars,Handlebars,Specialized,PRT-HAND-003,149,82,7,3
+700c Wheelset,Wheels,DT Swiss,PRT-WHEE-004,399,219,4,2
+Road Tire 700x28c,Tires,Continental,PRT-TIRE-005,59,32,30,10
+Air Fork 100mm,Suspension,Fox,PRT-SUSP-006,299,164,6,3
+Bottle Cage,Accessories,Generic,PRT-ACCE-007,12,7,50,10
+Torque Wrench Set,Tooling,Park Tool,PRT-TOOL-008,79,43,8,3
+Degreaser 500ml,Cleaning,Simple Green,PRT-CLEA-009,14,8,20,5
+Chain Lube,Oils,Finish Line,PRT-OILS-010,9,5,40,10
+Shift Cable Set,Cables,Shimano,PRT-CABL-011,18,10,25,8
+Gel Saddle,Seats,Brooks,PRT-SEAT-012,89,49,6,3
+Flat Pedals,Pedals,Crank Brothers,PRT-PEDA-013,59,32,10,4
+Alloy Frame,Frames,Trek,PRT-FRAM-014,599,329,2,1
+12-Speed Chain,Drivetrain,SRAM,PRT-DRIV-015,49,27,18,6
+Cable Disc Brake Set,Brakes,Shimano,PRT-BRAK-016,79,43,15,5
+MTB Tire 29x2.3,Tires,Maxxis,PRT-TIRE-017,69,38,20,6
+Rear Shock,Suspension,RockShox,PRT-SUSP-018,249,137,5,3
+Mudguard Set,Accessories,SKS,PRT-ACCE-019,34,19,12,4
+Chain Wear Indicator,Tooling,Park Tool,PRT-TOOL-020,29,16,8,3
+Bike Wash Concentrate,Cleaning,Simple Green,PRT-CLEA-021,11,6,25,5
+Brake Cable Set,Cables,Jagwire,PRT-CABL-022,12,7,30,8
+11-Speed Crankset,Drivetrain,Shimano,PRT-DRIV-023,159,87,6,3
+Alloy Riser Bars,Handlebars,Specialized,PRT-HAND-024,69,38,10,4
+Carbon Disc Wheels,Wheels,DT Swiss,PRT-WHEE-025,899,494,3,2
+Gravel Tire 700x40c,Tires,Continental,PRT-TIRE-026,64,35,15,5
+Dropper Post,Suspension,Brand-X,PRT-SUSP-027,129,71,7,3
+Pannier Rack,Accessories,Topeak,PRT-ACCE-028,49,27,10,4
+Pedal Set,Pedals,Shimano,PRT-PEDA-029,44,24,12,5
+Alloy Frame,Frames,Giant,PRT-FRAM-030,499,274,3,1

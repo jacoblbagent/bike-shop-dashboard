@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bike Shop — Sales & Orders</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    /* ===== Design Tokens ===== */
+    :root {
+      --primary: #2563EB;
+      --primary-hover: #1e4fc2;
+      --success: #16A34A;
+      --warning: #F59E0B;
+      --danger: #DC2626;
+      --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b;
+      --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 8px rgba(0,0,0,.08);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--slate-100); color: var(--slate-800); font-size: 14px; line-height: 1.5; }
+
+    /* ===== Summary Cards Row ===== */
+    .summary-bar { display:flex; gap:12px; margin-bottom:20px; }
+    .stat-card { flex:1; background:#fff; border-radius: var(--radius); padding:16px 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); }
+    .stat-card label { font-size:12px; color:var(--slate-500); text-transform:uppercase; letter-spacing:.4px; }
+    .stat-card .val { font-size:28px; font-weight:700; margin-top:4px; }
+    .stat-card .trend { font-size:12px; margin-top:2px; }
+    .stat-card .trend.up { color:var(--success); }
+    .stat-card .trend.down { color:var(--danger); }
+
+    /* ===== Toolbar ===== */
+    .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+    .search-input { padding:7px 12px 7px 32px; border:1px solid var(--slate-300); border-radius:8px; font-size:13px; width:260px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cline x1='16.66' y1='16.66' x2='21' y2='21'/%3E%3C/svg%3E") 9px center no-repeat; background-size:14px; transition:border-color .15s; }
+    .search-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+
+    select, .pill-btn { padding:7px 14px; border:1px solid var(--slate-300); border-radius:8px; font-size:13px; background:#fff; color:var(--slate-700); cursor:pointer; }
+    select:focus { outline:none; border-color:var(--primary); }
+
+    .pill-btn { user-select:none; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+    .pill-btn:hover:not([disabled]) { background:var(--slate-50); border-color:var(--slate-400); }
+    .pill-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    .btn-primary { padding:7px 16px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; transition:background .15s; display:inline-flex; align-items:center; gap:6px; }
+    .btn-primary:hover { background:var(--primary-hover); }
+
+    /* ===== Table ===== */
+    .table-wrap { background:#fff; border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--slate-200); overflow:hidden; }
+    table { width:100%; border-collapse:collapse; font-size:13px; text-align:left; }
+    thead { background:var(--slate-50); position:sticky; top:0; z-index:1; }
+    th { padding:10px 14px; font-weight:600; color:var(--slate-600); border-bottom:2px solid var(--slate-200); white-space:nowrap; user-select:none; cursor:pointer; }
+    th:hover:not([data-sort]) { color:var(--primary); }
+    td { padding:10px 14px; border-bottom:1px solid var(--slate-100); vertical-align:middle; }
+    tbody tr { transition:background .1s; cursor:pointer; }
+    tbody tr:hover { background:var(--slate-50); }
+    tbody tr.selected { background:#efefff; }
+
+    /* ===== Status Badges ===== */
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
+    .badge-pending   { background:#fef3c7; color:#b45309; }
+    .badge-processing, .badge-shipped  { background:#dbeafe; color:#1d4ed8; }
+    .badge-completed, .badge-delivered { background:#dcfce7; color:#15803d; }
+    .badge-refunded { background:#fee2e2; color:#b91c1c; }
+
+    /* ===== Customer Cell ===== */
+    .cust-cell { display:flex; align-items:center; gap:8px; }
+    .avatar { width:28px; height:28px; border-radius:50%; background:var(--slate-300); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+
+    /* ===== Sidebar Detail Drawer ===== */
+    .drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.25); z-index:40; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .drawer-overlay.open { opacity:1; pointer-events:auto; }
+    .drawer { position:fixed; top:0; right:-560px; width:540px; height:100%; background:#fff; box-shadow:-4px 0 20px rgba(0,0,0,.1); z-index:50; transition:right .25s ease; display:flex; flex-direction:column; overflow:hidden; }
+    .drawer.open { right:0; }
+    .drawer-header { padding:16px 20px; border-bottom:1px solid var(--slate-200); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .drawer-body { flex:1; overflow-y:auto; padding:0; }
+
+    /* Drawer sections */
+    .section-title { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--slate-500); font-weight:600; padding:14px 20px 4px; }
+    .cust-panel { margin:8px 16px; background:var(--slate-50); border-radius:var(--radius); padding:14px 18px; }
+    .cust-panel .row { display:flex; justify-content:space-between; padding:3px 0; font-size:13px; }
+    .cust-panel .row span:first-child { color:var(--slate-500); }
+
+    /* Line items mini table */
+    .items-table { width:100%; border-collapse:collapse; font-size:13px; margin:0 16px 8px; }
+    .items-table td, .items-table th { padding:7px 12px; text-align:left; border-bottom:1px solid var(--slate-100); }
+    .items-table th { font-size:11px; color:var(--slate-500); text-transform:uppercase; letter-spacing:.3px; }
+    .amount-col { text-align:right; font-variant-numeric:tabular-nums; }
+
+    /* Totals */
+    .order-totals { margin:8px 16px 24px; padding:14px 18px; background:var(--slate-50); border-radius:var(--radius); }
+    .order-totals .row { display:flex; justify-content:space-between; padding:3px 0; font-size:13px; }
+    .order-totals .grand { font-size:16px; font-weight:700; border-top:1px solid var(--slate-200); padding-top:8px; margin-top:4px; }
+
+    /* Timeline */
+    .timeline { margin:0 16px 16px; }
+    .tl-step { display:flex; gap:10px; position:relative; padding-bottom:14px; }
+    .tl-step:not(:last-child)::before { content:''; position:absolute; left:8px; top:18px; bottom:0; width:2px; background:var(--slate-200); }
+    .tl-dot { width:18px; height:18px; border-radius:50%; flex-shrink:0; border: 2px solid var(--slate-300); display:flex; align-items:center; justify-content:center; background:#fff; z-index:1; }
+    .tl-dot.done { background:var(--success); border-color:var(--success); }
+    .tl-dot.active-step { border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,.12); }
+    .tl-content { padding-top:2px; }
+    .tl-content strong { font-size:13px; }
+    .tl-content small { color:var(--slate-500); }
+
+    /* New Order Form */
+    .form-group { margin-bottom:14px; }
+    .form-group label { display:block; font-size:12px; font-weight:600; color:var(--slate-600); margin-bottom:4px; text-transform:uppercase; letter-spacing:.3px; }
+    .form-row { display:flex; gap:10px; }
+    .form-row > * { flex:1; }
+    input[type="text"], input[type="number"], input[type="date"], select.form-select { width:100%; padding:7px 12px; border:1px solid var(--slate-300); border-radius:8px; font-size:13px; }
+    input:focus, select.form-select:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+
+    .form-line-items { margin:0 16px 16px; }
+    .line-item-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+    .line-item-row input, .line-item-row select { flex:1; }
+
+    /* Pagination */
+    .pag-bar { display:flex; align-items:center; justify-content:flex-end; gap:4px; padding:12px 16px; border-top:1px solid var(--slate-200); }
+    .pag-btn { width:30px; height:30px; border-radius:6px; border:1px solid var(--slate-300); background:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .1s; }
+    .pag-btn:hover { background:var(--slate-50); }
+    .pag-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+    /* Empty state */
+    .empty-state { text-align:center; padding:48px 20px; color:var(--slate-400); }
+    .empty-state svg { margin-bottom:12px; opacity:.5; }
+
+    .close-x { width:30px; height:30px; border:none; background:none; cursor:pointer; font-size:18px; color:var(--slate-500); display:flex; align-items:center; justify-content:center; border-radius:6px; transition:background .1s; }
+    .close-x:hover { background:var(--slate-100); }
+
+    /* Quote tab badge */
+    .quote-tag { font-size:10px; background:var(--warning); color:#fff; padding:1px 6px; border-radius:4px; margin-left:6px; vertical-align:middle; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header style="background:#fff; border-bottom:1px solid var(--slate-200); padding:0 24px; height:52px; display:flex; align-items:center; justify-content:space-between;">
+    <div style="font-size:16px; font-weight:700; color:var(--primary);">Bike Shop Dashboard</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:12px; color:var(--slate-500);">&#9835; Sales &amp; Orders</span>
+    </div>
+  </header>
+
+  <main style="max-width:1400px; margin:0 auto; padding:20px;">
+
+    <!-- Summary Stats -->
+    <div class="summary-bar">
+      <div class="stat-card" v-for="s in summaryCards" :key="s.label">
+        <label>{{ s.label }}</label>
+        <div class="val">{{ s.value }}</div>
+        <div class="trend" :class="s.trend === 'up' ? 'up' : 'down'">{{ s.trendText }}</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex; gap:4px; margin-bottom:16px;">
+      <button class="pill-btn" :class="{active: tab==='orders'}" @click="tab='orders'">Orders</button>
+      <button class="pill-btn" :class="{active: tab==='quotes'}" @click="tab='quotes'">Quotes <span style="font-size:11px;">{{ quotes.length }}</span></button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input class="search-input" v-model="search" placeholder="Search orders by ID, customer, product..." @input="currentPage=1">
+      <select v-model="statusFilter" @change="currentPage=1">
+        <option value="">All Status</option>
+        <option v-for="s in ['pending','processing','shipped','delivered','refunded']" :value="s">{{ s | capitalize }}</option>
+      </select>
+      <select v-model="sortField" @change="currentPage=1">
+        <option value="date-desc">Latest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="total-desc">Highest Total</option>
+        <option value="total-asc">Lowest Total</option>
+      </select>
+
+      <div style="flex:1;"></div>
+
+      <button class="pill-btn" @click="openNewOrder">&#43; New Order</button>
+      <button v-if="tab==='quotes'" class="btn-primary" @click="convertAllQuotes">Convert All Quotes</button>
+    </div>
+
+    <!-- Orders Table -->
+    <div v-show="tab==='orders'">
+      <div class="table-wrap">
+        <table v-if="filteredOrders.length">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th @click="toggleSort('customer')">Customer {{ sortIndicator('customer') }}</th>
+              <th @click="toggleSort('items')">Items {{ sortIndicator('items') }}</th>
+              <th :class="'amount-col'">Total</th>
+              <th @click="toggleSort('status')">Status {{ sortIndicator('status') }}</th>
+              <th @click="toggleSort('date')">Date {{ sortIndicator('date') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="order in pageOrders" :key="order.id" @click="openDetail(order)" :class="{selected: selectedOrder && selectedOrder.id === order.id}">
+              <td><strong style="color:var(--primary)">{{ order.orderNo }}</strong></td>
+              <td>
+                <div class="cust-cell">
+                  <div class="avatar" :style="{background: customerColor(order.customer)}">{{ initial(order.customer.name) }}</div>
+                  <span>{{ order.customer.name }}</span>
+                </div>
+              </td>
+              <td>{{ order.lineItems.map(i => i.quantity+'x ' + i.product).join(', ') | truncate(40) }}</td>
+              <td class="amount-col" style="font-weight:600; font-variant-numeric:tabular-nums;">{{ fmt(order.total) }}</td>
+              <td><span class="badge" :class="'badge-'+order.status">{{ order.status | capitalize }}</span></td>
+              <td style="color:var(--slate-500); white-space:nowrap; font-variant-numeric:tabular-nums;">{{ order.date | dateFmt }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div v-else class="empty-state">
+          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+          <p>No orders match your filters.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="pag-bar">
+          <button class="pag-btn" :disabled="currentPage===1" @click="currentPage--">&lsaquo;</button>
+          <template v-for="p in pagesToRender" :key="p">
+            <button v-if="p>0 && p<=totalPages" class="pag-btn" :class="{active: currentPage===p}" @click="currentPage=p">{{ p }}</button>
+            <span v-else style="padding:4px 2px; color:var(--slate-400);">…</span>
+          </template>
+          <button class="pag-btn" :disabled="currentPage===totalPages" @click="currentPage++">&rsaquo;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quotes Table -->
+    <div v-show="tab==='quotes'">
+      <div class="table-wrap">
+        <table v-if="quotes.length">
+          <thead>
+            <tr><th>Quote #</th><th>Customer</th><th>Items</th><th class="amount-col">Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="q in quotes" :key="q.id" @click="openDetail(q)">
+              <td><strong style="color:var(--slate-500)">{{ q.quoteNo }}</strong></td>
+              <td>
+                <div class="cust-cell">
+                  <div class="avatar" :style="{background: customerColor(q.customer)}">{{ initial(q.customer.name) }}</div>
+                  {{ q.customer.name }}
+                </div>
+              </td>
+              <td>{{ q.lineItems.map(i => i.quantity+'x '+i.product).join(', ') | truncate(40) }}</td>
+              <td class="amount-col" style="font-weight:600; font-variant-numeric:tabular-nums;">{{ fmt(q.total) }}</td>
+              <td><span class="badge badge-processing">Draft</span></td>
+              <td style="color:var(--slate-500); white-space:nowrap;">{{ q.date | dateFmt }}</td>
+              <td @click.stop><button class="pill-btn" style="font-size:11px;" @click.prevent="convertQuote(q)">Convert</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else class="empty-state">
+          <p>No active quotes.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Detail Drawer ===== -->
+  <div class="drawer-overlay" :class="{open: selectedOrder}" @click="selectedOrder=null"></div>
+  <div class="drawer" :class="{open: selectedOrder}">
+    <template v-if="selectedOrder">
+
+      <!-- Header -->
+      <div class="drawer-header">
+        <div>
+          <strong style="font-size:16px;">{{ selectedOrder.orderNo || selectedOrder.quoteNo }}</strong>
+          <span class="badge" :class="'badge-'+selectedOrder.status" style="margin-left:8px;">{{ selectedOrder.status | capitalize }}</span>
+          <span v-if="selectedOrder.quoteNo" class="quote-tag">QUOTE</span>
+        </div>
+        <button class="close-x" @click="selectedOrder=null">&times;</button>
+      </div>
+
+      <div class="drawer-body">
+        <!-- Customer Info Panel -->
+        <div class="section-title">Customer Information</div>
+        <div class="cust-panel">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <div class="avatar" style="width:40px;height:40px;font-size:14px;" :style="{background: customerColor(selectedOrder.customer)}">{{ initial(selectedOrder.customer.name) }}</div>
+            <div>
+              <strong>{{ selectedOrder.customer.name }}</strong><br>
+              <small style="color:var(--slate-500);">Customer since {{ selectedOrder.customer.since }}</small>
+            </div>
+          </div>
+          <div class="row"><span>Email</span><span>{{ selectedOrder.customer.email }}</span></div>
+          <div class="row"><span>Phone</span><span>{{ selectedOrder.customer.phone }}</span></div>
+          <div class="row"><span>Purchases</span><strong style="color:var(--primary);">{{ selectedOrder.customer.purchases }}</strong></div>
+          <div class="row"><span>Lifetime Value</span><strong>{{ fmt(selectedOrder.customer.ltv) }}</strong></div>
+        </div>
+
+        <!-- Line Items -->
+        <div class="section-title">Line Items</div>
+        <table class="items-table">
+          <thead><tr><th>Product</th><th style="text-align:center;">Qty</th><th class="amount-col">Unit Price</th><th class="amount-col">Subtotal</th></tr></thead>
+          <tbody>
+            <tr v-for="item in selectedOrder.lineItems" :key="item.product">
+              <td>{{ item.product }}</td>
+              <td style="text-align:center;">{{ item.quantity }}</td>
+              <td class="amount-col">{{ fmt(item.price) }}</td>
+              <td class="amount-col" style="font-weight:600;">{{ fmt(item.price * item.quantity) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="section-title">Payment Summary</div>
+        <div class="order-totals">
+          <div class="row"><span>Subtotal</span><span>{{ fmt(selectedOrder.subtotal || selectedOrder.total * 0.912) }}</span></div>
+          <div class="row"><span>Tax (8.75%)</span><span>{{ fmt((selectedOrder.total || (selectedOrder.subtotal||0)) - (selectedOrder.subtotal || selectedOrder.total * 0.912)) }}</span></div>
+          <template v-if="selectedOrder.discount">
+            <div class="row" style="color:var(--danger);"><span>Discount</span><span>-{{ fmt(selectedOrder.discount) }}</span></div>
+          </template>
+          <div class="row grand"><span>Total</span><span>{{ fmt(selectedOrder.total) }}</span></div>
+          <div class="row" style="margin-top:6px;"><span>Payment</span><strong>{{ selectedOrder.paymentMethod || '—' }}</strong></div>
+        </div>
+
+        <!-- Timeline / Status Tracker -->
+        <div class="section-title">Order Progress</div>
+        <div class="timeline">
+          <template v-for="(step, idx) in getTimeline(selectedOrder)" :key="idx">
+            <div class="tl-step">
+              <div class="tl-dot" :class="{done: step.done, 'active-step': step.current}"></div>
+              <div class="tl-content">
+                <strong>{{ step.label }}</strong><br>
+                <small>{{ step.detail }}</small>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Notes -->
+        <div class="section-title">Notes</div>
+        <div style="padding:0 20px 16px; font-size:13px; color:var(--slate-600); line-height:1.6;">{{ selectedOrder.notes || 'No notes on this order.' }}</div>
+
+        <!-- Action Buttons -->
+        <div class="section-title">Actions</div>
+        <div style="padding:0 20px 16px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button v-if="selectedOrder.status === 'pending'" class="btn-primary" @click="updateStatus(selectedOrder, 'processing')">Process Order</button>
+          <button v-if="selectedOrder.status === 'processing'" class="btn-primary" @click="updateStatus(selectedOrder, 'shipped')">Mark Shipped</button>
+          <button v-if="selectedOrder.status === 'shipped'" class="btn-primary" @click="updateStatus(selectedOrder, 'delivered')">Mark Delivered</button>
+          <button class="pill-btn" @click="printReceipt">Print Receipt</button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- New Order Modal (inline drawer reuse) -->
+  <div class="drawer-overlay" :class="{open: showNewOrder}" @click="showNewOrder=false"></div>
+  <div class="drawer" :class="{open: showNewOrder}">
+    <template v-if="showNewOrder">
+      <div class="drawer-header">
+        <strong style="font-size:16px;">New Order</strong>
+        <button class="close-x" @click="showNewOrder=false">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <div style="padding:16px 20px;">
+          <div class="section-title" style="padding-left:0; padding-top:0;">Customer</div>
+          <select v-model="newForm.customerId" class="form-select" style="margin-bottom:14px;">
+            <option value="">Select customer...</option>
+            <option v-for="c in allCustomers" :value="c.id">{{ c.name }}</option>
+          </select>
+
+          <div class="section-title">Products</div>
+          <div v-for="(li, idx) in newForm.lineItems" :key="idx" class="form-line-items" style="margin:0 0 6px;">
+            <div class="line-item-row">
+              <select v-model="li.productId">
+                <option value="">Product...</option>
+                <option v-for="p in products" :value="p.id">{{ p.name }} @ {{ fmt(p.price) }}</option>
+              </select>
+              <input type="number" v-model.number="li.quantity" min="1" style="width:60px; flex:none;" placeholder="Qty">
+              <button class="close-x" @click="removeLineItem(idx)" v-if="newForm.lineItems.length > 1">&times;</button>
+            </div>
+          </div>
+          <button class="pill-btn" style="margin:8px 0 14px;" @click="addLineItem">+ Add Item</button>
+
+          <div class="section-title">Notes</div>
+          <textarea v-model="newForm.notes" rows="2" style="width:100%; padding:7px 12px; border:1px solid var(--slate-300); border-radius:8px; font-size:13px; resize:vertical;"></textarea>
+
+          <div class="section-title">Payment</div>
+          <select v-model="newForm.paymentMethod" class="form-select">
+            <option value="Cash">Cash</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Mobile Pay">Mobile Pay</option>
+            <option value="Invoice">Invoice</option>
+          </select>
+
+          <div style="margin-top:20px; display:flex; gap:8px;">
+            <button class="btn-primary" :disabled="!newForm.customerId || newForm.lineItems.some(li => !li.productId)" @click="submitOrder">Create Order</button>
+            <button class="pill-btn" @click="showNewOrder=false">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+</div>
+<script>
+(function () {
+  var TAX_RATE = 0.0875;
+
+  Vue.createApp({
+    data: function () {
+      return {
+        tab: 'orders',
+        search: '',
+        statusFilter: '',
+        sortField: 'date-desc',
+        currentPage: 1,
+        pageSize: 8,
+        selectedOrder: null,
+        showNewOrder: false,
+
+        customers: [
+          { id: 1, name: 'Alice Johnson', email: 'alice@bikeemail.com', phone: '(555) 234-8901', since: '2022-03', purchases: 12, ltv: 3420 },
+          { id: 2, name: 'Bob Martinez', email: 'bob.m@fix.com', phone: '(555) 678-1234', since: '2023-07', purchases: 7, ltv: 1890 },
+          { id: 3, name: 'Carol Chen', email: 'carol.bike@mail.com', phone: '(555) 432-9876', since: '2021-11', purchases: 18, ltv: 5210 },
+          { id: 4, name: 'Dan Williams', email: 'dan.w@road.com', phone: '(555) 876-5432', since: '2024-01', purchases: 3, ltv: 670 },
+          { id: 5, name: 'Eva Petrov', email: 'eva.p@spin.com', phone: '(555) 345-6789', since: '2022-06', purchases: 9, ltv: 2340 },
+        ],
+
+        products: [
+          { id: 1, name: 'Trek Marlin 7 - Mountain Bike', price: 1299 },
+          { id: 2, name: 'Giant Escape 3 Hybrid', price: 849 },
+          { id: 3, name: 'SRAM PG-1130 Cassette', price: 54.99 },
+          { id: 4, name: 'Shimano MT200 Brakes', price: 69.99 },
+          { id: 5, name: 'Schwalbe Marathon Tires (set)', price: 79.98 },
+          { id: 6, name: 'Giro Agilis MIPS Helmet', price: 149 },
+          { id: 7, name: 'Lezyne CG Drive Floor Pump', price: 59.99 },
+          { id: 8, name: 'Bike Service (Tune-Up)', price: 89 },
+          { id: 9, name: 'BikeService Plus (Full Tune)', price: 149 },
+          { id: 10, name: 'KMC Chain Tool', price: 34.99 },
+        ],
+
+        orders: [
+          { id: 1, orderNo: '#ORD-2026-0417', date: '2026-07-28', status: 'pending', subtotal: null, total: 1387.79, paymentMethod: 'Credit Card', notes: 'Large order — customer picked up helmet in store.',
+            customer: { id: 1 }, lineItems: [{ productId: 1, quantity: 1, price: 1299 }, { productId: 7, quantity: 1, price: 59.99 }] },
+          { id: 2, orderNo: '#ORD-2026-0416', date: '2026-07-27', status: 'shipped', subtotal: null, total: 848.36, paymentMethod: 'Debit Card', notes: '',
+            customer: { id: 2 }, lineItems: [{ productId: 3, quantity: 1, price: 54.99 }, { productId: 4, quantity: 1, price: 69.99 }, { productId: 5, quantity: 1, price: 79.98 }, { productId: 10, quantity: 2, price: 34.99 }, { productId: 8, quantity: 2, price: 89 }] },
+          { id: 3, orderNo: '#ORD-2026-0415', date: '2026-07-26', status: 'delivered', subtotal: null, total: 921.85, paymentMethod: 'Cash', notes: 'Customer satisfied with tune-up.',
+            customer: { id: 3 }, lineItems: [{ productId: 2, quantity: 1, price: 849 }, { productId: 6, quantity: 1, price: 149 }] },
+          { id: 4, orderNo: '#ORD-2026-0414', date: '2026-07-25', status: 'delivered', subtotal: null, total: 261.38, paymentMethod: 'Mobile Pay', notes: '',
+            customer: { id: 5 }, lineItems: [{ productId: 9, quantity: 1, price: 149 }] },
+          { id: 5, orderNo: '#ORD-2026-0413', date: '2026-07-24', status: 'refund', subtotal: null, total: 89.79, paymentMethod: 'Credit Card', notes: 'Returned — wrong frame size.',
+            customer: { id: 4 }, lineItems: [{ productId: 2, quantity: 1, price: 849 }] },
+          { id: 6, orderNo: '#ORD-2026-0412', date: '2026-07-23', status: 'processing', subtotal: null, total: 771.56, paymentMethod: 'Invoice', notes: 'Corporate account — net 30.',
+            customer: { id: 3 }, lineItems: [{ productId: 3, quantity: 3, price: 54.99 }, { productId: 4, quantity: 2, price: 69.99 }, { productId: 8, quantity: 1, price: 89 }] },
+          { id: 7, orderNo: '#ORD-2026-0411', date: '2026-07-22', status: 'delivered', subtotal: null, total: 284.43, paymentMethod: 'Cash', notes: '',
+            customer: { id: 1 }, lineItems: [{ productId: 6, quantity: 2, price: 149 }] },
+          { id: 8, orderNo: '#ORD-2026-0410', date: '2026-07-21', status: 'pending', subtotal: null, total: 558.53, paymentMethod: 'Credit Card', notes: 'Awaiting parts delivery.',
+            customer: { id: 2 }, lineItems: [{ productId: 5, quantity: 3, price: 79.98 }, { productId: 10, quantity: 3, price: 34.99 }] },
+          { id: 9, orderNo: '#ORD-2026-0409', date: '2026-07-20', status: 'delivered', subtotal: null, total: 1415.86, paymentMethod: 'Debit Card', notes: '',
+            customer: { id: 5 }, lineItems: [{ productId: 1, quantity: 1, price: 1299 }, { productId: 10, quantity: 1, price: 34.99 }] },
+          { id: 10, orderNo: '#ORD-2026-0408', date: '2026-07-19', status: 'delivered', subtotal: null, total: 254.63, paymentMethod: 'Mobile Pay', notes: '',
+            customer: { id: 4 }, lineItems: [{ productId: 5, quantity: 2, price: 79.98 }] },
+          { id: 11, orderNo: '#ORD-2026-0407', date: '2026-07-18', status: 'refund', subtotal: null, total: 153.03, paymentMethod: 'Cash', notes: 'Customer changed mind within return window.',
+            customer: { id: 1 }, lineItems: [{ productId: 9, quantity: 1, price: 149 }] },
+          { id: 12, orderNo: '#ORD-2026-0406', date: '2026-07-17', status: 'delivered', subtotal: null, total: 1387.79, paymentMethod: 'Credit Card', notes: '',
+            customer: { id: 3 }, lineItems: [{ productId: 1, quantity: 1, price: 1299 }, { productId: 7, quantity: 1, price: 59.99 }] },
+        ],
+
+        quotes: [
+          { id: 'q1', quoteNo: 'QUO-0034', date: '2026-07-28', status: 'draft', subtotal: null, total: 507.96, paymentMethod: '', notes: 'Estimate for full brake job + gear tune.',
+            customer: { id: 4 }, lineItems: [{ productId: 4, quantity: 1, price: 69.99 }, { productId: 3, quantity: 1, price: 54.99 }, { productId: 9, quantity: 2, price: 149 }] },
+          { id: 'q2', quoteNo: 'QUO-0035', date: '2026-07-27', status: 'draft', subtotal: null, total: 849.00, paymentMethod: '', notes: 'New bike — waiting on approval.',
+            customer: { id: 1 }, lineItems: [{ productId: 2, quantity: 1, price: 849 }] },
+          { id: 'q3', quoteNo: 'QUO-0036', date: '2026-07-26', status: 'draft', subtotal: null, total: 549.92, paymentMethod: '', notes: 'Winter prep package.',
+            customer: { id: 2 }, lineItems: [{ productId: 8, quantity: 1, price: 89 }, { productId: 5, quantity: 1, price: 79.98 }, { productId: 4, quantity: 3, price: 69.99 }] },
+        ],
+
+        newForm: { customerId: '', lineItems: [{ productId: '', quantity: 1 }], notes: '', paymentMethod: 'Cash' },
+      };
+    },
+
+    computed: {
+      allCustomers: function () { return this.customers; },
+
+      summaryCards: function () {
+        var o = this.orders;
+        var todayTotal = 0, monthTotal = 0;
+        var pendingCount = 0, completedCount = 0;
+        for (var i = 0; i < o.length; i++) { if (o[i].status !== 'refund') { monthTotal += o[i].total; } if (o[i].status === 'pending') pendingCount++; if (o[i].status === 'delivered') completedCount++; }
+        return [
+          { label: "Today's Revenue", value: this.fmt(o.filter(function(x){return x.date==='2026-07-28';}).reduce(function(s,x){return s+x.total;},0)), trend:'up', trendText:'+12% vs yesterday' },
+          { label: 'Open Orders', value: pendingCount, trend:'down', trendText:'3 awaiting processing' },
+          { label: 'Monthly Revenue', value: '$28.4k', trend:'up', trendText:'+8% vs last month' },
+          { label: 'Avg Order Value', value: this.fmt(o.reduce(function(s,x){return s+x.total;},0)/o.length), trend:'up', trendText:'+3% vs last month' },
+        ];
+      },
+
+      filteredOrders: function () {
+        var list = this.orders.slice();
+        if (this.statusFilter) list = list.filter(function (o) { return o.status === this.statusFilter; }.bind(this));
+        if (this.search) {
+          var qs = this.search.toLowerCase();
+          list = list.filter(function (o) {
+            return o.orderNo.toLowerCase().indexOf(qs) !== -1 ||
+              (o.customer && o.customer.name && o.customer.name.toLowerCase().indexOf(qs) !== -1) ||
+              o.lineItems.some(function (li) { return li.product && li.product.toLowerCase().indexOf(qs) !== -1; });
+          }.bind(this));
+        }
+        // Attach resolved customer & product names
+        var custMap = {}; this.customers.forEach(function(c){custMap[c.id]=c;});
+        var prodMap = {}; this.products.forEach(function(p){prodMap[p.id]=p;});
+        list.forEach(function(o){
+          o.customer = custMap[o.customer.id] || {name:'Unknown'};
+          o.lineItems.forEach(function(li){li.product = (prodMap[li.productId]||{}).name || '—';});
+        });
+
+        list.sort(function(a,b){
+          switch(this.sortField){
+            case 'date-asc': return a.date.localeCompare(b.date);
+            case 'date-desc': default: return b.date.localeCompare(a.date);
+            case 'total-desc': return b.total - a.total;
+            case 'total-asc': return a.total - b.total;
+          }
+        }.bind(this));
+        return list;
+      },
+
+      totalPages: function () { return Math.max(1, Math.ceil(this.filteredOrders.length / this.pageSize)); },
+      pageOrders: function () { var s = (this.currentPage - 1) * this.pageSize; return this.filteredOrders.slice(s, s + this.pageSize); },
+      pagesToRender: function () {
+        var pages = [];
+        for (var i = 1; i <= this.totalPages; i++) pages.push(i);
+        if (pages.length > 7) { var out = [1]; for (var j = this.currentPage - 1; j <= this.currentPage + 1; j++) if (j > 1 && j < this.totalPages) out.push(j); out.push(0); out.push(this.totalPages); return out; }
+        return pages;
+      },
+    },
+
+    filters: {
+      capitalize: function (v) { return !v ? '' : v.charAt(0).toUpperCase() + v.slice(1); },
+      truncate: function (v, len) { if (!v || v.length <= len) return v; return v.substring(0, len) + '\u2026'; },
+      dateFmt: function (v) { var d = new Date(v + 'T00:00:00'); return d.toLocaleDateString('en-US', { month:'short', day:'numeric' }); },
+    },
+
+    methods: {
+      fmt: function (n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); },
+      initial: function (name) { return name ? name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().substring(0,2) : '?'; },
+      customerColor: function (c) { var colors = ['#6366F1','#EC4899','#F59E0B','#10B981','#8B5CF6']; return colors[(c && (c.id || 0)) % colors.length] || '#64748b'; },
+      toggleSort: function() { /* sortField dropdown handles this */ },
+      sortIndicator: function(f) { var map = {'date':'date-desc','status':'date-desc','items':'total-desc','customer':'date-asc'}; return this.sortField === map[f] ? '\u25BC' : ''; },
+
+      openDetail: function (order) {
+        // Resolve nested data for clean rendering
+        var custMap = {}; this.customers.forEach(function(c){custMap[c.id]=c;});
+        var prodMap = {}; this.products.forEach(function(p){prodMap[p.id]=p;});
+        order.customer = Object.assign({}, custMap[order.customer.id] || {name:'Unknown',email:'',phone:'',since:'',purchases:0,ltv:0}, order.customer);
+        order.lineItems = order.lineItems.map(function(li){ return Object.assign({}, li, {product: (prodMap[li.productId]||{}).name || '—'}); });
+        this.selectedOrder = order;
+      },
+
+      getTimeline: function (order) {
+        var status = order.status;
+        var steps = [
+          { label: 'Order Created', detail: order.date, done: true },
+          { label: 'Processing', detail: status === 'processing' || ['shipped','delivered'].indexOf(status)!==-1 ? 'In warehouse\u2014preparing items' : null, done: ['processing','shipped','delivered'].indexOf(status)!==-1, current: status==='processing' },
+        ];
+        if (['shipped','delivered'].indexOf(status) !== -1 || status === 'refund') {
+          steps.push({ label: 'Shipped', detail: 'Carrier: BikeExpress \u2022 Tracking: BX-8839-4721', done: ['shipped','delivered'].indexOf(status)!==-1, current: status==='shipped' });
+        }
+        if (status === 'delivered' || status === 'refund') {
+          steps.push({ label: 'Delivered', detail: 'Received at store pickup counter', done: status==='delivered', current: false });
+        }
+        if (status === 'delivered') {
+          steps.push({ label: 'Complete', detail: 'Order fulfilled successfully', done: true, current: false });
+        }
+        if (status === 'refund') {
+          steps.push({ label: 'Refunded', detail: 'Full refund processed', done: true, current: false });
+        }
+        return steps;
+      },
+
+      updateStatus: function (order, newStatus) {
+        order.status = newStatus;
+        // Also update in the orders array
+        var idx = this.orders.indexOf(order);
+        if (idx !== -1) this.orders[idx].status = newStatus;
+      },
+
+      convertQuote: function (q) {
+        var custMap = {}; this.customers.forEach(function(c){custMap[c.id]=c;});
+        q.customer = custMap[q.customer.id] || {name:'Unknown',email:'',phone:'',since:'',purchases:0,ltv:0};
+        var newOrderNo = '#ORD-2026-' + String(this.orders.length + 1).padStart(4, '0');
+        this.orders.unshift(Object.assign({}, q, { orderNo: newOrderNo, status: 'pending', id: this.orders.length + 1 }));
+        this.quotes = this.quotes.filter(function(x){return x.id !== q.id;});
+      },
+
+      convertAllQuotes: function () {
+        var remaining = [];
+        this.quotes.forEach(function(q) { remaining.push(q); });
+        while (remaining.length) { this.convertQuote(remaining.shift()); }
+      },
+
+      openNewOrder: function () { this.showNewOrder = true; },
+
+      addLineItem: function () { this.newForm.lineItems.push({ productId: '', quantity: 1 }); },
+      removeLineItem: function (idx) { this.newForm.lineItems.splice(idx, 1); },
+
+      submitOrder: function () {
+        var custMap = {}; this.customers.forEach(function(c){custMap[c.id]=c;});
+        var c = custMap[this.newForm.customerId];
+        if (!c) return;
+        var items = this.newForm.lineItems.filter(function(li){return li.productId;});
+        if (!items.length) return;
+        var total = 0;
+        var lineItems = this.products.map(function(p){return {id:p.id};}) ;
+        var prodMap = {}; this.products.forEach(function(p){prodMap[p.id]=p;});
+        items = items.map(function(li){var subtotal = li.quantity * (prodMap[li.productId]||{}).price; total += subtotal; return Object.assign({},li);});
+        var taxTotal = total / (1 - TAX_RATE); // include tax estimate
+        this.orders.unshift({
+          id: this.orders.length + 1,
+          orderNo: '#ORD-2026-' + String(this.orders.length + 1).padStart(4,'0'),
+          date: '2026-07-28', status: 'pending',
+          subtotal: total, total: taxTotal,
+          paymentMethod: this.newForm.paymentMethod,
+          notes: this.newForm.notes || '',
+          customer: { id: c.id },
+          lineItems: items.map(function(li){ return Object.assign({},li); }),
+        });
+        this.showNewOrder = false;
+        this.newForm = { customerId: '', lineItems: [{ productId: '', quantity: 1 }], notes: '', paymentMethod: 'Cash' };
+      },
+
+      printReceipt: function () { /* placeholder */ window.alert('Receipt printed to local printer.'); },
+    },
+
+    mounted: function () {
+      var self = this;
+      // Resolve product names on initial data load so the table renders correctly
+      var prodMap = {}; self.products.forEach(function(p){prodMap[p.id]=p;});
+      var custMap = {}; self.customers.forEach(function(c){custMap[c.id]=c;});
+      self.orders.forEach(function(o){
+        o.customer = Object.assign({}, custMap[o.customer.id] || {name:'Unknown'}, o.customer);
+        o.lineItems.forEach(function(li){ li.product = (prodMap[li.productId]||{}).name || '—'; });
+      });
+    },
+  }).mount('#app');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+@use "@/styles/abstracts" as *;
+
+.page {
+  padding: var(--space-3xl) 0;
+}
+
+.header {
+  @include flex-between;
+  margin-bottom: var(--space-2xl);
+
+  @include md {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.tabBar {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-xs);
+
+  @include md {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-xxs);
+  }
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-surface-hover);
+  }
+}
+
+.activeTab {
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+
+  &:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-light);
+  }
+}
+
+.toolbar {
+  @include flex-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+
+  @include md {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.loaderWrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6xl) 0;
+}
+
+.price {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}

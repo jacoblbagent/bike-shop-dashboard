@@ -1,0 +1,8 @@
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: var(--space-6xl) var(--space-lg); text-align: center;
+}
+.iconWrap { display: flex; color: var(--color-text-muted); margin-bottom: var(--space-lg); opacity: 0.5; }
+.title { font-size: var(--font-size-lg); color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+.description { font-size: var(--font-size-sm); color: var(--color-text-muted); max-width: 400px; margin-bottom: var(--space-2xl); }
+.action { }

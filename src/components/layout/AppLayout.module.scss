@@ -1,0 +1,29 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+}
+
+.main {
+  flex: 1;
+  margin-top: var(--header-height);
+  padding: var(--space-2xl);
+  transition: margin-left var(--transition-base);
+  min-height: calc(100vh - var(--header-height));
+
+  @include md {
+    margin-left: 0 !important;
+    padding: var(--space-lg);
+    padding-bottom: 80px;
+  }
+}
+
+.content {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  animation: fadeIn var(--transition-slow) ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

@@ -1,0 +1,162 @@
+@use "@/styles/abstracts" as *;
+
+.page {
+  padding: var(--space-3xl) 0;
+}
+
+.header {
+  @include flex-between;
+  margin-bottom: var(--space-2xl);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+}
+
+// Metrics row
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-3xl);
+}
+
+// Charts row
+.chartsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+.chartCard {
+  @include card;
+}
+
+.chartHeader {
+  @include flex-between;
+  margin-bottom: var(--space-lg);
+}
+
+.chartTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.chartSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xxs);
+}
+
+.chartContainer {
+  width: 100%;
+  height: 300px;
+}
+
+// Tooltip
+.tooltip {
+  @include card;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.tooltipLabel {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.tooltipRow {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+// Legend
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  color: var(--color-text-secondary);
+}
+
+.legendValue {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+// Skeleton
+.metricSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chartSkeleton {
+  height: 400px;
+}
+
+.skelLine {
+  height: 12px;
+  background: var(--color-border-light);
+  border-radius: var(--radius-sm);
+}
+
+.skelLineBig {
+  height: 24px;
+  width: 40%;
+  background: var(--color-border-light);
+  border-radius: var(--radius-sm);
+}
+
+.skelBlock {
+  flex: 1;
+  background: var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+// Responsive
+@media (max-width: 1100px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,16 @@
+name,email,phone,tier,totalSpent,orderCount,lastVisit
+James Johnson,james.johnson@email.com,(555) 123-4567,Gold,4800,6,2026-07-15T10:30:00Z
+Sarah Williams,sarah.williams@email.com,(555) 234-5678,Platinum,8200,9,2026-07-28T14:15:00Z
+Michael Brown,michael.brown@email.com,(555) 345-6789,Bronze,1200,3,2026-06-20T09:00:00Z
+Emily Jones,emily.jones@email.com,(555) 456-7890,Silver,2800,5,2026-07-22T16:45:00Z
+David Garcia,david.garcia@email.com,(555) 567-8901,Gold,5600,7,2026-07-30T11:00:00Z
+Jessica Miller,jessica.miller@email.com,(555) 678-9012,Silver,1900,4,2026-07-18T13:30:00Z
+Daniel Davis,daniel.davis@email.com,(555) 789-0123,Platinum,9400,11,2026-07-31T08:00:00Z
+Ashley Rodriguez,ashley.rodriguez@email.com,(555) 890-1234,Bronze,750,2,2026-05-10T15:20:00Z
+Robert Martinez,robert.martinez@email.com,(555) 901-2345,Gold,6200,8,2026-07-25T10:00:00Z
+Megan Anderson,megan.anderson@email.com,(555) 012-3456,Silver,3100,6,2026-07-29T12:00:00Z
+William Wilson,william.wilson@email.com,(555) 111-2222,Gold,7100,9,2026-07-27T09:30:00Z
+Olivia Taylor,olivia.taylor@email.com,(555) 222-3333,Platinum,10500,12,2026-08-01T11:15:00Z
+Joseph Thomas,joseph.thomas@email.com,(555) 333-4444,Bronze,450,1,2026-04-05T14:00:00Z
+Sophia Moore,sophia.moore@email.com,(555) 444-5555,Silver,2400,5,2026-07-21T16:00:00Z
+Thomas Jackson,thomas.jackson@email.com,(555) 555-6666,Gold,3800,6,2026-07-19T10:30:00Z
