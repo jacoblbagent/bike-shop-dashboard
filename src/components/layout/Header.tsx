@@ -50,7 +50,9 @@ export default function Header({ onMenuToggle, mobile = false }: HeaderProps) {
   const navigate = useNavigate();
   const { sidebarCollapsed } = useSelector((s: RootState) => s.ui);
   const location = useLocation();
-  const pageTitle = Object.entries(pageTitles).find(([path]) => location.pathname.startsWith(path))?.[1] || 'Dashboard';
+  const pageTitle = Object.entries(pageTitles)
+    .sort(([a], [b]) => b.length - a.length)
+    .find(([path]) => location.pathname.startsWith(path))?.[1] || 'Dashboard';
 
   const [notifications, setNotifications] = useState(initialNotifications);
   const [notifOpen, setNotifOpen] = useState(false);
