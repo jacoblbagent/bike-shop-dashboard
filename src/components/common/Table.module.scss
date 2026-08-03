@@ -2,14 +2,14 @@
 .tableWrap { overflow-x: auto; @include scrollbar-thin; }
 .table { width: 100%; table-layout: fixed; border-collapse: collapse; }
 .th {
+  display: flex; align-items: center; gap: var(--space-xs);
   padding: var(--space-md) var(--space-lg);
   font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold);
   text-transform: uppercase; letter-spacing: 0.05em;
   color: var(--color-text-secondary); text-align: left; white-space: nowrap;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
-  &.sortable { cursor: pointer; user-select: none; gap: var(--space-xs); &:hover { color: var(--color-text); } }
-  span { margin-right: var(--space-xs); }
+  &.sortable { cursor: pointer; user-select: none; &:hover { color: var(--color-text); } }
 }
 .sortIcon { opacity: 0; }
 .th.sortable:hover .sortIcon { opacity: 0.3; }
