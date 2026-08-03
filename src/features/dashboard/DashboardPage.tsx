@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import MetricCard from '@/components/common/MetricCard';
 import Skeleton from '@/components/common/Skeleton';
 import Card from '@/components/common/Card';
+import Table, { type Column } from '@/components/common/Table';
 import type { DashboardMetrics, Order } from '@/types';
 import { formatCurrency, formatDate, formatRelativeDate } from '@/utils';
 import api from '@/services/api';
@@ -264,6 +265,32 @@ export default function DashboardPage() {
         .slice(0, 5),
     [filteredOrders],
   );
+
+  const recentOrderColumns: Column<Order>[] = [
+    {
+      key: 'customer',
+      header: 'Customer',
+      sortable: true,
+      sortKey: 'customerName',
+      render: (row) => (
+        <>
+          <span>{row.customerName}</span>
+          <br />
+          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+            {formatRelativeDate(row.createdAt)}
+          </span>
+        </>
+      ),
+    },
+    { key: 'status', header: 'Status', sortable: true, sortKey: 'status' },
+    {
+      key: 'total',
+      header: 'Amount',
+      sortable: true,
+      sortKey: 'total',
+      render: (row) => <span>{formatCurrency(row.total)}</span>,
+    },
+  ];
 
   // ── Time frame selector (shared by all states) ─────────────
   const timeFrameSelector = (
@@ -529,38 +556,13 @@ export default function DashboardPage() {
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Recent Orders</h2>
         </div>
-        <div className={styles.ordersWrap}>
-          <table className={styles.ordersTable}>
-          <thead>
-            <tr>
-              <th>Customer</th>
-              <th>Status</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentOrders.map(order => (
-              <tr key={order.id} onClick={() => navigate('/sales', { state: { selectedOrderId: order.id } })} style={{ cursor: 'pointer' }}>
-                <td>
-                  <span className={styles.customerName}>
-                    {order.customerName}
-                  </span>
-                  <br />
-                  <span className={styles.orderDate}>
-                    {formatRelativeDate(order.createdAt)}
-                  </span>
-                </td>
-                <td>
-                  {order.status}
-                </td>
-                <td className={styles.orderAmount}>
-                  {formatCurrency(order.total)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+        <Table
+          columns={recentOrderColumns}
+          data={recentOrders}
+          keyExtractor={(r) => r.id}
+          onRowClick={(r) => navigate('/sales', { state: { selectedOrderId: r.id } })}
+          emptyMessage="No orders found"
+        />
         <Link to="/sales" className={styles.viewAll}>
           View All Orders →
         </Link>
