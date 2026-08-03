@@ -8,6 +8,7 @@ import Table, { type Column } from '@/components/common/Table';
 import type { DashboardMetrics, Order } from '@/types';
 import { formatCurrency, formatDate, formatRelativeDate } from '@/utils';
 import api from '@/services/api';
+import { mockApi } from '@/mocks/generateMockData';
 import styles from './DashboardPage.module.scss';
 
 // ── Chart helpers ──────────────────────────────────────────────
@@ -121,10 +122,21 @@ export default function DashboardPage() {
 
     async function load() {
       try {
-        const [m, o] = await Promise.all([
-          (api.getMetrics as () => Promise<DashboardMetrics>)(),
-          (api.getOrders as () => Promise<Order[]>)(),
-        ]);
+        let m: DashboardMetrics;
+        let o: Order[];
+        try {
+          [m, o] = await Promise.all([
+            (api.getMetrics as () => Promise<DashboardMetrics>)(),
+            (api.getOrders as () => Promise<Order[]>)(),
+          ]);
+        } catch {
+          // Fall back to mock API when backend is unavailable (e.g. Netlify)
+          const mock = mockApi();
+          [m, o] = await Promise.all([
+            mock.getMetrics(),
+            mock.getOrders(),
+          ]);
+        }
         if (!cancelled) {
           setMetrics(m);
           setOrders(o);
