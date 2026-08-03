@@ -87,7 +87,7 @@ export default function InventoryPage() {
   }, [location.state, bikes, parts]);
 
   const bikeColumns: Column<Bike>[] = [
-    { key: 'name', header: 'Name', sortable: true, render: (row) => `${row.brand} ${row.model}` },
+    { key: 'name', header: 'Name', sortable: true, sortKey: 'model', render: (row) => `${row.brand} ${row.model}` },
     {
       key: 'price',
       header: 'Price',

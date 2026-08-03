@@ -6,6 +6,7 @@ export interface Column<T> {
   key: string;
   header: string;
   sortable?: boolean;
+  sortKey?: string;
   render?: (row: T) => React.ReactNode;
   width?: string;
 }
@@ -38,7 +39,9 @@ export default function Table<T extends Record<string, any>>({
 
   const sorted = [...data].sort((a, b) => {
     if (!sortKey) return 0;
-    const aVal = a[sortKey]; const bVal = b[sortKey];
+    const col = columns.find(c => c.key === sortKey);
+    const sortField = col?.sortKey ?? sortKey;
+    const aVal = a[sortField]; const bVal = b[sortField];
     if (typeof aVal === 'string' && typeof bVal === 'string')
       return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     return sortDir === 'asc' ? (aVal - bVal) : (bVal - aVal);

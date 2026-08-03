@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import MetricCard from '@/components/common/MetricCard';
 import Skeleton from '@/components/common/Skeleton';
 import Card from '@/components/common/Card';
@@ -105,6 +105,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('12m');
+  const navigate = useNavigate();
   const [customStart, setCustomStart] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - 30);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -539,7 +540,7 @@ export default function DashboardPage() {
           </thead>
           <tbody>
             {recentOrders.map(order => (
-              <tr key={order.id}>
+              <tr key={order.id} onClick={() => navigate('/sales', { state: { selectedOrderId: order.id } })} style={{ cursor: 'pointer' }}>
                 <td>
                   <span className={styles.customerName}>
                     {order.customerName}
