@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '@/app/store';
 import { fetchOrders, addOrder } from '@/app/store/slices/salesSlice';
@@ -38,6 +39,8 @@ export default function SalesPage() {
   const [search, setSearch] = useState('');
   const [showNewOrder, setShowNewOrder] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const location = useLocation();
+  const handledNavState = useRef(false);
   const [form, setForm] = useState<{
     customerName: string;
     items: { productName: string; quantity: number; unitPrice: number }[];
@@ -59,6 +62,19 @@ export default function SalesPage() {
         o.status.toLowerCase().includes(q)
     );
   }, [orders, search]);
+
+  // Auto-open order from customer page navigation
+  useEffect(() => {
+    const orderId = (location.state as any)?.selectedOrderId;
+    if (orderId && orders.length > 0 && !handledNavState.current) {
+      const order = orders.find((o) => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+      }
+      handledNavState.current = true;
+      window.history.replaceState({}, '');
+    }
+  }, [location.state, orders]);
 
   const columns: Column<Order>[] = [
     { key: 'orderNumber', header: 'Order #', sortable: true, width: '120px' },
